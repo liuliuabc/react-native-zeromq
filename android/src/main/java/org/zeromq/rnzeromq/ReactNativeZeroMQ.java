@@ -2,7 +2,12 @@ package org.zeromq.rnzeromq;
 
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.nio.channels.WritableByteChannel;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.UUID;
 import java.util.HashMap;
 import java.lang.String;
@@ -13,7 +18,19 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableNativeMap;
 
+import org.json.JSONObject;
+import org.msgpack.core.MessageBufferPacker;
+import org.msgpack.core.MessagePack;
+import org.msgpack.core.MessagePacker;
+import org.msgpack.core.MessageUnpacker;
+import org.msgpack.core.buffer.MessageBufferOutput;
+import org.msgpack.value.ImmutableMapValue;
+import org.msgpack.value.ImmutableValue;
+import org.msgpack.value.Value;
 import org.zeromq.ZMQ;
 
 
@@ -22,7 +39,7 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
     final String TAG = "ReactNativeZeroMQ";
 
     private Map<String, Object> _storage;
-    private ZMQ.Context         _context;
+    private ZMQ.Context _context;
 
     ReactNativeZeroMQ(final ReactApplicationContext reactContext) {
         super(reactContext);
@@ -39,8 +56,8 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
     void _destroy() {
         Iterator it = _storage.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            ZMQ.Socket socket = (ZMQ.Socket)pair.getValue();
+            Map.Entry pair = (Map.Entry) it.next();
+            ZMQ.Socket socket = (ZMQ.Socket) pair.getValue();
 
             socket.close();
             it.remove();
@@ -58,19 +75,19 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
 
-        constants.put("ZMQ_REP",  ZMQ.REP);
-        constants.put("ZMQ_REQ",  ZMQ.REQ);
+        constants.put("ZMQ_REP", ZMQ.REP);
+        constants.put("ZMQ_REQ", ZMQ.REQ);
         constants.put("ZMQ_XREP", ZMQ.XREP);
         constants.put("ZMQ_XREQ", ZMQ.XREQ);
 
-        constants.put("ZMQ_PUB",  ZMQ.PUB);
-        constants.put("ZMQ_SUB",  ZMQ.SUB);
+        constants.put("ZMQ_PUB", ZMQ.PUB);
+        constants.put("ZMQ_SUB", ZMQ.SUB);
         constants.put("ZMQ_XPUB", ZMQ.XPUB);
         constants.put("ZMQ_XSUB", ZMQ.XSUB);
 
         constants.put("ZMQ_DONTWAIT", ZMQ.DONTWAIT);
-        constants.put("ZMQ_NOBLOCK",  ZMQ.NOBLOCK);
-        constants.put("ZMQ_SNDMORE",  ZMQ.SNDMORE);
+        constants.put("ZMQ_NOBLOCK", ZMQ.NOBLOCK);
+        constants.put("ZMQ_SNDMORE", ZMQ.SNDMORE);
 
         constants.put("ZMQ_DEALER", ZMQ.DEALER);
         constants.put("ZMQ_ROUTER", ZMQ.ROUTER);
@@ -215,7 +232,7 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
         }).start();
     }
 
-    @ReactMethod
+    /*@ReactMethod
     @SuppressWarnings("unused")
     public void socketSend(final String uuid, final String body, final Integer flag, final Callback callback) {
         (new ReactTask(callback) {
@@ -223,6 +240,18 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 return socket.send(body, flag);
+            }
+        }).startAsync();
+    }*/
+
+    @ReactMethod
+    @SuppressWarnings("unused")
+    public void socketSend(final String uuid, final ReadableMap body, final Integer flag, final Callback callback) {
+        (new ReactTask(callback) {
+            @Override
+            Object run() throws Exception {
+                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
+                return socket.send(MPack.encode(body.toHashMap()), flag);
             }
         }).startAsync();
     }
@@ -238,8 +267,16 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                 if (poolInterval > (-1)) {
                     return ReactNativeZeroMQ.this._poolSocketPooling(socket, flag, poolInterval);
                 }
+                byte[] recv = socket.recv();
+                try {
+                    Map result = (Map) MPack.decode(recv);
+                    JSONObject obj = new JSONObject(result);
+                    return obj.toString();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return new String(recv, "utf-8");
 
-                return socket.recvStr(flag);
             }
         }).startAsync();
     }
@@ -247,7 +284,7 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
     private String _poolSocketPooling(ZMQ.Socket socket, final Integer flag, final Integer poolInterval) {
         StringBuilder strBuffer = new StringBuilder();
 
-        ZMQ.PollItem  items []  = { new ZMQ.PollItem(socket, ZMQ.Poller.POLLIN) };
+        ZMQ.PollItem items[] = {new ZMQ.PollItem(socket, ZMQ.Poller.POLLIN)};
         int rc = ZMQ.poll(items, poolInterval);
 
         if (rc != -1) {
