@@ -37,6 +37,4 @@ android {
 dependencies {
     compile "com.facebook.react:react-native:+"
     compile "org.zeromq:jeromq:0.3.5"
-    compile 'org.msgpack:msgpack-core:0.8.11'
-
 }
