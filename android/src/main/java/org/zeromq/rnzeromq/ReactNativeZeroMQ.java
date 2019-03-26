@@ -1,13 +1,13 @@
 package org.zeromq.rnzeromq;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
-import org.json.JSONObject;
 import org.zeromq.ZMQ;
 
 import java.util.HashMap;
@@ -137,14 +137,14 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                 if (socket == null) {
                     return "";
                 }
-                /*System.out.println("socket.getReconnectIVL()");
+               /* System.out.println("socket.getReconnectIVL()");
                 System.out.println(socket.getReconnectIVL());
                 System.out.println(socket.getReconnectIVLMax());
                 System.out.println(socket.getLinger());
-                System.out.println(socket.getHWM());
-                socket.setReceiveTimeOut(10);
-                socket.setSendTimeOut(10);
-                socket.setReconnectIVL(10);
+                System.out.println(socket.getHWM());*/
+                socket.setReceiveTimeOut(10*1000);
+                socket.setSendTimeOut(0);
+                /*socket.setReconnectIVL(10);
                 socket.setReconnectIVLMax(10);
                 socket.setLinger(10);
                 socket.setHWM(10);*/
@@ -259,8 +259,8 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                 try {
                     byte[] recv = socket.recv();
                     Map result = (Map) MPack.decode(recv);
-                    JSONObject obj = new JSONObject(result);
-                    return obj.toString();
+                    String str = JSONObject.toJSONString(result);
+                    return str;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
