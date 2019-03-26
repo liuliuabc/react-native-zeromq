@@ -136,9 +136,14 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                 if (socket == null) {
                     return "";
                 }
-                socket.setReceiveTimeOut(10 * 1000);
-                socket.setSendTimeOut(0);
-                socket.setImmediate(false);
+                socket.setConflate(true);
+                //socket.setConflate(true);
+               /* socket.setReceiveTimeOut(10 * 1000);
+                socket.setSendTimeOut(1000);
+                socket.setSndHWM(2);
+                socket.setRcvHWM(10);
+                socket.setImmediate(true);
+                socket.setBacklog(2);*/
                 return ReactNativeZeroMQ.this._newObject(socket);
             }
         }).start();
@@ -233,6 +238,7 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 boolean success = socket.send(MPack.encode(body.toHashMap()), flag);
+                System.out.println("socketSend------"+success);
                 return success;
             }
         }).startAsync();
@@ -252,6 +258,7 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                     byte[] recv = socket.recv();
                     Map result = (Map) MPack.decode(recv);
                     String str = JSONObject.toJSONString(result);
+                    System.out.println("socketRecv------"+str);
                     return str;
                 } catch (Exception e) {
                     e.printStackTrace();
