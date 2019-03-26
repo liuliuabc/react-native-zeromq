@@ -233,7 +233,6 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 boolean success = socket.send(MPack.encode(body.toHashMap()), flag);
-                System.out.println("socket.send=========="+success);
                 return success;
             }
         }).startAsync();
@@ -253,7 +252,6 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                     byte[] recv = socket.recv();
                     Map result = (Map) MPack.decode(recv);
                     String str = JSONObject.toJSONString(result);
-                    System.out.println("socketRecv=========="+str);
                     return str;
                 } catch (Exception e) {
                     e.printStackTrace();
