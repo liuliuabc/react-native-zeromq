@@ -204,7 +204,7 @@ public class MPack {
             while (length-- != 0) {
                 final Object key = this.decode();
                 final Object val = this.decode();
-                map.put(key, val);
+                map.put(key+"", val);
             }
             return map;
         }
