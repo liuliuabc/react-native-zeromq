@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.UUID;
 
 
-
 class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
 
     final String TAG = "ReactNativeZeroMQ";
@@ -137,17 +136,9 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                 if (socket == null) {
                     return "";
                 }
-               /* System.out.println("socket.getReconnectIVL()");
-                System.out.println(socket.getReconnectIVL());
-                System.out.println(socket.getReconnectIVLMax());
-                System.out.println(socket.getLinger());
-                System.out.println(socket.getHWM());*/
-                socket.setReceiveTimeOut(10*1000);
+                socket.setReceiveTimeOut(10 * 1000);
                 socket.setSendTimeOut(0);
-                /*socket.setReconnectIVL(10);
-                socket.setReconnectIVLMax(10);
-                socket.setLinger(10);
-                socket.setHWM(10);*/
+                socket.setImmediate(false);
                 return ReactNativeZeroMQ.this._newObject(socket);
             }
         }).start();
@@ -241,7 +232,9 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
-                return socket.send(MPack.encode(body.toHashMap()), flag);
+                boolean success = socket.send(MPack.encode(body.toHashMap()), flag);
+                System.out.println("socket.send=========="+success);
+                return success;
             }
         }).startAsync();
     }
@@ -260,6 +253,7 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                     byte[] recv = socket.recv();
                     Map result = (Map) MPack.decode(recv);
                     String str = JSONObject.toJSONString(result);
+                    System.out.println("socketRecv=========="+str);
                     return str;
                 } catch (Exception e) {
                     e.printStackTrace();
