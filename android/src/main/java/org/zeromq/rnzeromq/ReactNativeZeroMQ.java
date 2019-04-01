@@ -1,13 +1,13 @@
 package org.zeromq.rnzeromq;
 
 
-import com.alibaba.fastjson.JSONObject;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 
+import org.json.JSONObject;
 import org.zeromq.ZMQ;
 
 import java.util.HashMap;
@@ -257,9 +257,9 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                 try {
                     byte[] recv = socket.recv();
                     Map result = (Map) MPack.decode(recv);
-                    String str = JSONObject.toJSONString(result);
-                    System.out.println("socketRecv------"+str);
-                    return str;
+                    JSONObject obj = new JSONObject(result);
+                    System.out.println("socketRecv------"+obj.toString());
+                    return obj.toString();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
