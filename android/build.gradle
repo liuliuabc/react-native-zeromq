@@ -47,6 +47,6 @@ allprojects {
 }
 
 dependencies {
-    api "com.facebook.react:react-native:${safeExtGet('reactNativeVersion', '0.61.5')}"
+    api "com.facebook.react:react-native:${safeExtGet('reactNativeVersion', '+')}"
     api "org.zeromq:jeromq:0.5.2"
 }
