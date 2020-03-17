@@ -115,10 +115,10 @@ export class ZMQSocket {
     });
   }
 
-  send(body, flags) {
-    flags = flags || 0;
+  send(body) {
     return new Promise((resolve, reject) => {
-      this._bridge.socketSend(this._uuid, body, flags, answ => {
+      const msg = Array.isArray(body) ? body : [body];
+      this._bridge.socketSend(this._uuid, msg, answ => {
         if (!answ) {
           reject(new ZMQNoAnswerError());
           return;

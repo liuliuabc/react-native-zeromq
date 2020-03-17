@@ -5,10 +5,13 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableNativeArray;
 
-import org.json.JSONObject;
 import org.zeromq.ZMQ;
+import org.zeromq.ZMsg;
+import org.zeromq.ZFrame;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -230,7 +233,7 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
         }).startAsync();
     }*/
 
-    @ReactMethod
+    /*@ReactMethod
     @SuppressWarnings("unused")
     public void socketSend(final String uuid, final ReadableMap body, final Integer flag, final Callback callback) {
         (new ReactTask(callback) {
@@ -238,6 +241,24 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 boolean success = socket.send(MPack.encode(body.toHashMap()), flag);
+                System.out.println("socketSend------"+success);
+                return success;
+            }
+        }).startAsync();
+    }*/
+
+    @ReactMethod
+    @SuppressWarnings("unused")
+    public void socketSend(final String uuid, final ReadableArray body, final Callback callback) {
+        (new ReactTask(callback) {
+            @Override
+            Object run() throws Exception {
+                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
+                ZMsg msg = new ZMsg();
+                for (int i = 0; i < body.size(); i++) {
+                    msg.add(body.getString(i));
+                }
+                boolean success = msg.send(socket, true);
                 System.out.println("socketSend------"+success);
                 return success;
             }
@@ -255,16 +276,17 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                     return ReactNativeZeroMQ.this._poolSocketPooling(socket, flag, poolInterval);
                 }*/
                 try {
-                    byte[] recv = socket.recv();
-                    Map result = (Map) MPack.decode(recv);
-                    JSONObject obj = new JSONObject(result);
-                    System.out.println("socketRecv------"+obj.toString());
-                    return obj.toString();
+                    ZMsg msg = ZMsg.recvMsg(socket, flag);
+                    System.out.println("socketRecv------" + msg.toString());
+                    WritableArray arr = new WritableNativeArray();
+                    for (ZFrame f : msg) {
+                        arr.pushString(f.getString(ZMQ.CHARSET));
+                    }
+                    return arr;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return null;
-
             }
         }).startAsync();
     }
