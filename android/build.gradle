@@ -1,5 +1,3 @@
-apply plugin: 'com.android.library'
-
 buildscript {
     repositories {
         google()
@@ -10,6 +8,8 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.5.1'
     }
 }
+
+apply plugin: 'com.android.library'
 
 def safeExtGet(prop, fallback) {
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -30,12 +30,23 @@ android {
     }
 }
 
-repositories {
-    google()
-    jcenter()
+allprojects {
+    repositories {
+        mavenLocal()
+        google()
+        jcenter()
+        maven {
+            // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+            url "$rootDir/../node_modules/react-native/android"
+        }
+        maven {
+            // Android JSC is installed from npm
+            url("$rootDir/../node_modules/jsc-android/dist")
+        }
+    }
 }
 
 dependencies {
-    compile "com.facebook.react:react-native:+"
-    compile "org.zeromq:jeromq:0.4.3"
+    api "com.facebook.react:react-native:${safeExtGet('reactNativeVersion', '0.61.5')}"
+    api "org.zeromq:jeromq:0.5.2"
 }

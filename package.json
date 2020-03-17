@@ -4,9 +4,8 @@
   "description": "React Native module for ZeroMQ client platforms: Android",
   "main": "js/index.js",
   "homepage": "https://github.com/olehs/react-native-zeromq#readme",
-  "author":   "ZDmitry",
-  "dependencies": {
-  },
+  "author": "ZDmitry",
+  "dependencies": {},
   "engines": {
     "npm": "^2.0.0"
   },
