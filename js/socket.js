@@ -39,6 +39,24 @@ export class ZMQSocket {
     return this._uuid;
   }
 
+  setTimeouts(sendTimeout, receiveTimeout) {
+    return new Promise((resolve, reject) => {
+      this._bridge.setSocketTimeouts(this._uuid, sendTimeout, receiveTimeout, answ => {
+        if (!answ) {
+          reject(new ZMQNoAnswerError());
+          return;
+        }
+
+        if (answ.error) {
+          reject(new ZMQError(answ.error));
+          return;
+        }
+
+        resolve(answ.result);
+      });
+    });
+  }
+
   bind(addr) {
     return new Promise((resolve, reject) => {
       this._bridge.socketBind(this._uuid, addr, answ => {

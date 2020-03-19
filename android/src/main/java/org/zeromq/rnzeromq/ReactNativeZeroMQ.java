@@ -160,6 +160,20 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
 
     @ReactMethod
     @SuppressWarnings("unused")
+    public void setSocketTimeouts(final String uuid, final int sendTimeout, final int receiveTimeout, final Callback callback) {
+        (new ReactTask(callback) {
+            @Override
+            Object run() throws Exception {
+                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
+                socket.setSendTimeOut(sendTimeout);
+                socket.setReceiveTimeOut(receiveTimeout);
+                return this._successResult(true);
+            }
+        }).start();
+    }
+
+    @ReactMethod
+    @SuppressWarnings("unused")
     public void socketConnect(final String uuid, final String addr, final Callback callback) {
         (new ReactTask(callback) {
             @Override
@@ -226,7 +240,6 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                     msg.add(body.getString(i));
                 }
                 boolean success = msg.send(socket, true);
-                System.out.println("socketSend------"+success);
                 return success;
             }
         }).startAsync();
@@ -240,7 +253,6 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 ZMsg msg = ZMsg.recvMsg(socket, flag);
-                System.out.println("socketRecv------" + msg.toString());
                 WritableArray arr = new WritableNativeArray();
                 for (ZFrame f : msg) {
                     arr.pushString(f.getString(ZMQ.CHARSET));
