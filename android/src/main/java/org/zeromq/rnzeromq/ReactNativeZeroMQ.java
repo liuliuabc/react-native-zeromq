@@ -139,14 +139,7 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                 if (socket == null) {
                     return "";
                 }
-                socket.setConflate(true);
-                //socket.setConflate(true);
-               /* socket.setReceiveTimeOut(10 * 1000);
-                socket.setSendTimeOut(1000);
-                socket.setSndHWM(2);
-                socket.setRcvHWM(10);
-                socket.setImmediate(true);
-                socket.setBacklog(2);*/
+
                 return ReactNativeZeroMQ.this._newObject(socket);
             }
         }).start();
@@ -221,32 +214,6 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
         }).start();
     }
 
-    /*@ReactMethod
-    @SuppressWarnings("unused")
-    public void socketSend(final String uuid, final String body, final Integer flag, final Callback callback) {
-        (new ReactTask(callback) {
-            @Override
-            Object run() throws Exception {
-                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
-                return socket.send(body, flag);
-            }
-        }).startAsync();
-    }*/
-
-    /*@ReactMethod
-    @SuppressWarnings("unused")
-    public void socketSend(final String uuid, final ReadableMap body, final Integer flag, final Callback callback) {
-        (new ReactTask(callback) {
-            @Override
-            Object run() throws Exception {
-                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
-                boolean success = socket.send(MPack.encode(body.toHashMap()), flag);
-                System.out.println("socketSend------"+success);
-                return success;
-            }
-        }).startAsync();
-    }*/
-
     @ReactMethod
     @SuppressWarnings("unused")
     public void socketSend(final String uuid, final ReadableArray body, final Callback callback) {
@@ -272,47 +239,16 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
-               /* if (poolInterval > (-1)) {
-                    return ReactNativeZeroMQ.this._poolSocketPooling(socket, flag, poolInterval);
-                }*/
-                try {
-                    ZMsg msg = ZMsg.recvMsg(socket, flag);
-                    System.out.println("socketRecv------" + msg.toString());
-                    WritableArray arr = new WritableNativeArray();
-                    for (ZFrame f : msg) {
-                        arr.pushString(f.getString(ZMQ.CHARSET));
-                    }
-                    return arr;
-                } catch (Exception e) {
-                    e.printStackTrace();
+                ZMsg msg = ZMsg.recvMsg(socket, flag);
+                System.out.println("socketRecv------" + msg.toString());
+                WritableArray arr = new WritableNativeArray();
+                for (ZFrame f : msg) {
+                    arr.pushString(f.getString(ZMQ.CHARSET));
                 }
-                return null;
+                return arr;
             }
         }).startAsync();
     }
-
-    /*private String _poolSocketPooling(ZMQ.Socket socket, final Integer flag, final Integer poolInterval) {
-        StringBuilder strBuffer = new StringBuilder();
-
-        ZMQ.PollItem items[] = {new ZMQ.PollItem(socket, ZMQ.Poller.POLLIN)};
-        int rc = ZMQ.poll(items, poolInterval);
-
-        if (rc != -1) {
-            if (items[0].isReadable()) {
-                do {
-                    String recv = socket.recvStr(flag);
-                    if (recv != null) {
-                        strBuffer.append(recv);
-                        strBuffer.append("\n");
-                    }
-                } while (socket.hasReceiveMore());
-            }
-        } else {
-            Log.d(TAG, "Pooller failed");
-        }
-
-        return strBuffer.toString();
-    }*/
 
     @ReactMethod
     @SuppressWarnings("unused")
