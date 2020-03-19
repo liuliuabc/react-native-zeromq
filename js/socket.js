@@ -155,6 +155,42 @@ export class ZMQSocket {
     });
   }
 
+  subscribe(topic) {
+    return new Promise((resolve, reject) => {
+      this._bridge.socketSubscribe(this._uuid, topic, answ => {
+        if (!answ) {
+          reject(new ZMQNoAnswerError());
+          return;
+        }
+
+        if (answ.error) {
+          reject(new ZMQError(answ.error));
+          return;
+        }
+
+        resolve(answ.result);
+      });
+    });
+  }
+
+  unsubscribe(topic) {
+    return new Promise((resolve, reject) => {
+      this._bridge.socketUnsubscribe(this._uuid, topic, answ => {
+        if (!answ) {
+          reject(new ZMQNoAnswerError());
+          return;
+        }
+
+        if (answ.error) {
+          reject(new ZMQError(answ.error));
+          return;
+        }
+
+        resolve(answ.result);
+      });
+    });
+  }
+
   hasMore() {
     return new Promise((resolve, reject) => {
       this._bridge.socketHasMore(this._uuid, answ => {

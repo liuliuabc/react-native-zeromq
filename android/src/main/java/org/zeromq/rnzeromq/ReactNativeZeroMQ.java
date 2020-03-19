@@ -316,6 +316,32 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
 
     @ReactMethod
     @SuppressWarnings("unused")
+    public void socketSubscribe(final String uuid, final String topic, final Callback callback) {
+        (new ReactTask(callback) {
+            @Override
+            Object run() throws Exception {
+                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
+                socket.subscribe(topic);
+                return this._successResult(true);
+            }
+        }).start();
+    }
+
+    @ReactMethod
+    @SuppressWarnings("unused")
+    public void socketUnsubscribe(final String uuid, final String topic, final Callback callback) {
+        (new ReactTask(callback) {
+            @Override
+            Object run() throws Exception {
+                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
+                socket.unsubscribe(topic);
+                return this._successResult(true);
+            }
+        }).start();
+    }
+
+    @ReactMethod
+    @SuppressWarnings("unused")
     public void socketHasMore(final String uuid, final Callback callback) {
         (new ReactTask(callback) {
             @Override
