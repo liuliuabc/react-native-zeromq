@@ -12,22 +12,10 @@ export class ZMQSocket {
   }
 
   destroy() {
-    return new Promise((resolve, reject) => {
-      this._bridge.destroy(this._uuid, answ => {
-        if (!answ) {
-          reject(new ZMQNoAnswerError());
-          return;
-        }
-
-        if (answ.error) {
-          reject(new ZMQError(answ.error));
-          return;
-        }
-
-        this._uuid = "";
-        this._addr = "";
-        resolve(answ.result);
-      });
+    return this._bridge.destroy(this._uuid).then(answ => {
+      this._uuid = "";
+      this._addr = "";
+      return answ;
     });
   }
 
@@ -39,192 +27,76 @@ export class ZMQSocket {
     return this._uuid;
   }
 
-  setTimeouts(sendTimeout, receiveTimeout) {
-    return new Promise((resolve, reject) => {
-      this._bridge.setSocketTimeouts(this._uuid, sendTimeout, receiveTimeout, answ => {
-        if (!answ) {
-          reject(new ZMQNoAnswerError());
-          return;
-        }
+  setSendTimeout(sendTimeout) {
+    return this._bridge.setSendTimeOut(this._uuid, sendTimeout);
+  }
 
-        if (answ.error) {
-          reject(new ZMQError(answ.error));
-          return;
-        }
+  setReceiveTimeout(receiveTimeout) {
+    return this._bridge.setReceiveTimeOut(this._uuid, receiveTimeout);
+  }
 
-        resolve(answ.result);
-      });
-    });
+  setImmediate(immediate) {
+    return this._bridge.setImmediate(this._uuid, immediate);
+  }
+
+  setLinger(linger) {
+    return this._bridge.setLinger(this._uuid, linger);
   }
 
   bind(addr) {
-    return new Promise((resolve, reject) => {
-      this._bridge.socketBind(this._uuid, addr, answ => {
-        if (!answ) {
-          reject(new ZMQNoAnswerError());
-          return;
-        }
-
-        if (answ.error) {
-          reject(new ZMQError(answ.error));
-          return;
-        }
-
-        this._addr = addr;
-        resolve(answ.result);
-      });
+    return this._bridge.socketBind(this._uuid, addr).then(answ => {
+      this._addr = addr;
+      return answ;
     });
   }
 
   connect(addr) {
-    return new Promise((resolve, reject) => {
-      this._bridge.socketConnect(this._uuid, addr, answ => {
-        if (!answ) {
-          reject(new ZMQNoAnswerError());
-          return;
-        }
+    return this._bridge.socketConnect(this._uuid, addr).then(answ => {
+      this._addr = addr;
+      return answ;
+    });
+  }
 
-        if (answ.error) {
-          reject(new ZMQError(answ.error));
-          return;
-        }
-
-        this._addr = addr;
-        resolve(answ.result);
-      });
+  disconnect(addr) {
+    return this._bridge.socketDisconnect(this._uuid, addr).then(answ => {
+      this._addr = addr;
+      return answ;
     });
   }
 
   close() {
-    return new Promise((resolve, reject) => {
-      this._bridge.socketClose(this._uuid, answ => {
-        if (!answ) {
-          reject(new ZMQNoAnswerError());
-          return;
-        }
-
-        if (answ.error) {
-          reject(new ZMQError(answ.error));
-          return;
-        }
-
-        this._uuid = "";
-        this._addr = "";
-        resolve(answ.result);
-      });
+    return this._bridge.socketClose(this._uuid).then(answ => {
+      this._uuid = "";
+      this._addr = "";
+      return answ;
     });
   }
 
   setIdentity(id) {
-    return new Promise((resolve, reject) => {
-      this._bridge.setSocketIdentity(this._uuid, id, answ => {
-        if (!answ) {
-          reject(new ZMQNoAnswerError());
-          return;
-        }
-
-        if (answ.error) {
-          reject(new ZMQError(answ.error));
-          return;
-        }
-
-        resolve(answ.result);
-      });
-    });
+    return this._bridge.setIdentity(this._uuid, id);
   }
 
   send(body) {
-    return new Promise((resolve, reject) => {
-      const msg = Array.isArray(body) ? body : [body];
-      this._bridge.socketSend(this._uuid, msg, answ => {
-        if (!answ) {
-          reject(new ZMQNoAnswerError());
-          return;
-        }
-
-        if (answ.error) {
-          reject(new ZMQError(answ.error));
-          return;
-        }
-
-        resolve(answ.result);
-      });
-    });
+    const msg = Array.isArray(body) ? body : [body];
+    return this._bridge.socketSend(this._uuid, msg);
   }
 
   recv(opts = {}) {
     let flags   = opts.flags || 0;
     let poolInt = opts.poolInterval || (-1);
-
-    return new Promise((resolve, reject) => {
-      this._bridge.socketRecv(this._uuid, flags, poolInt, answ => {
-        if (!answ) {
-          reject(new ZMQNoAnswerError());
-          return;
-        }
-
-        if (answ.error) {
-          reject(new ZMQError(answ.error));
-          return;
-        }
-
-        resolve(answ.result);
-      });
-    });
+    return this._bridge.socketRecv(this._uuid, flags, poolInt);
   }
 
   subscribe(topic) {
-    return new Promise((resolve, reject) => {
-      this._bridge.socketSubscribe(this._uuid, topic, answ => {
-        if (!answ) {
-          reject(new ZMQNoAnswerError());
-          return;
-        }
-
-        if (answ.error) {
-          reject(new ZMQError(answ.error));
-          return;
-        }
-
-        resolve(answ.result);
-      });
-    });
+    return this._bridge.socketSubscribe(this._uuid, topic);
   }
 
   unsubscribe(topic) {
-    return new Promise((resolve, reject) => {
-      this._bridge.socketUnsubscribe(this._uuid, topic, answ => {
-        if (!answ) {
-          reject(new ZMQNoAnswerError());
-          return;
-        }
-
-        if (answ.error) {
-          reject(new ZMQError(answ.error));
-          return;
-        }
-
-        resolve(answ.result);
-      });
-    });
+    returnthis._bridge.socketUnsubscribe(this._uuid, topic);
   }
 
   hasMore() {
-    return new Promise((resolve, reject) => {
-      this._bridge.socketHasMore(this._uuid, answ => {
-        if (!answ) {
-          reject(new ZMQNoAnswerError());
-          return;
-        }
-
-        if (answ.error) {
-          reject(new ZMQError(answ.error));
-          return;
-        }
-
-        resolve(answ.result);
-      });
-    });
+    return this._bridge.socketHasMore(this._uuid);
   }
 
 }

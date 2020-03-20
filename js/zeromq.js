@@ -31,49 +31,17 @@ export class ZeroMQ {
   // @TODO: add more ...
 
   static socket(socType) {
-    return new Promise((resolve, reject) => {
-      let _validSocTypes = Object.values(ZeroMQ.SOCKET.TYPE);
-      if (!~_validSocTypes.indexOf(socType)) {
-        reject(new ZMQSocketTypeError());
-        return;
-      }
+    let _validSocTypes = Object.values(ZeroMQ.SOCKET.TYPE);
+    if (!~_validSocTypes.indexOf(socType)) {
+      return Promise.reject(new ZMQSocketTypeError());
+    }
 
-      Core.bridge.socketCreate(socType, answ => {
-        if (!answ) {
-          reject(new ZMQNoAnswerError());
-          return;
-        }
-
-        if (answ.error) {
-          reject(new ZMQError(answ.error));
-          return;
-        }
-
-        if (!answ.result) {
-          resolve(null);
-          return;
-        }
-
-        resolve(new ZMQSocket(Core.bridge, answ.result));
-      });
-    });
+    return Core.bridge.socketCreate(socType)
+    .then(sock => new ZMQSocket(Core.bridge, sock));
   }
 
   static getDeviceIdentifier() {
-    return new Promise((resolve, reject) => {
-      Core.bridge.getDeviceIdentifier(answ => {
-        if (!answ) {
-          reject(new ZMQNoAnswerError());
-          return;
-        }
-
-        if (answ.error) {
-          reject(new ZMQError(answ.error));
-          return;
-        }
-        resolve(answ.result);
-      });
-    });
+    return Core.bridge.getDeviceIdentifier();
   }
 
   static onNotification(callback) {
