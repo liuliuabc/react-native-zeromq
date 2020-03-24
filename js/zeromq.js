@@ -1,6 +1,6 @@
 import Core from './core'
 import { ZMQSocket } from './socket'
-import { ZMQError, ZMQNoAnswerError, ZMQSocketTypeError } from './errors'
+import { ZMQSocketTypeError } from './errors'
 
 export class ZeroMQ {
 
@@ -19,7 +19,8 @@ export class ZeroMQ {
       XSUB:   Core.bridge.ZMQ_XSUB,
 
       DEALER: Core.bridge.ZMQ_DEALER,
-      ROUTER: Core.bridge.ZMQ_ROUTER
+      ROUTER: Core.bridge.ZMQ_ROUTER,
+      PAIR:   Core.bridge.ZMQ_PAIR,
     },
     OPTS: {
       DONT_WAIT:  Core.bridge.ZMQ_DONTWAIT,
@@ -37,7 +38,11 @@ export class ZeroMQ {
     }
 
     return Core.bridge.socketCreate(socType)
-    .then(sock => new ZMQSocket(Core.bridge, sock));
+    .then(uuid => new ZMQSocket(Core.bridge, uuid));
+  }
+
+  static destroy(forced) {
+    return Core.bridge.destroy(!!forced);
   }
 
   static getDeviceIdentifier() {

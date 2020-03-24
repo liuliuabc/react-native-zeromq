@@ -1,8 +1,9 @@
-import { ZMQError, ZMQNoAnswerError } from './errors'
+import { ZMQEvents } from './events'
 
 export class ZMQSocket {
 
   _bridge = null;
+  _events = null;
   _uuid   = "";
   _addr   = "";
 
@@ -11,20 +12,19 @@ export class ZMQSocket {
     this._uuid   = uuid;
   }
 
-  destroy() {
-    return this._bridge.destroy(this._uuid).then(answ => {
-      this._uuid = "";
-      this._addr = "";
-      return answ;
-    });
-  }
-
   get address() {
     return this._addr;
   }
 
   get uuid() {
     return this._uuid;
+  }
+
+  get events() {
+    if (this._events === null) {
+      this._events = new ZMQEvents(this, this._bridge);
+    }
+    return this._events;
   }
 
   setSendTimeout(sendTimeout) {
@@ -64,14 +64,18 @@ export class ZMQSocket {
     });
   }
 
-  close() {
-    return this._bridge.socketClose(this._uuid).then(answ => {
-      this._uuid = "";
-      this._addr = "";
-      return answ;
-    });
+  async close() {
+    if (this._events !== null) {
+      await this._events.close();
+      this._events = null;
+    }
+    
+    const answ = await this._bridge.socketClose(this._uuid);
+    this._uuid = "";
+    this._addr = "";
+    return answ;
   }
-
+  
   setIdentity(id) {
     return this._bridge.setIdentity(this._uuid, id);
   }
@@ -81,10 +85,12 @@ export class ZMQSocket {
     return this._bridge.socketSend(this._uuid, msg);
   }
 
-  recv(opts = {}) {
-    let flags   = opts.flags || 0;
-    let poolInt = opts.poolInterval || (-1);
-    return this._bridge.socketRecv(this._uuid, flags, poolInt);
+  recv(flag) {
+    return this._bridge.socketRecv(this._uuid, flag || 0);
+  }
+
+  recvEvent(flags) {
+    return this._bridge.socketRecvEvent(this._uuid, flags || 0);
   }
 
   subscribe(topic) {
@@ -92,7 +98,11 @@ export class ZMQSocket {
   }
 
   unsubscribe(topic) {
-    returnthis._bridge.socketUnsubscribe(this._uuid, topic);
+    return this._bridge.socketUnsubscribe(this._uuid, topic);
+  }
+
+  monitor(addr, events) {
+    return this._bridge.socketMonitor(this._uuid, addr, events);
   }
 
   hasMore() {
