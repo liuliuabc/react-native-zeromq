@@ -14,10 +14,8 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/olehs/react-native-zeromq.git", :tag => "v#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,swift}"
-  s.swift_versions = ['4.2', '5']
-  
-  s.dependency "React"
-  # ...
-  # s.dependency "..."
-end
+  s.swift_version = "5"
 
+  s.dependency "React"
+  s.dependency "SwiftyZeroMQ5"
+end

@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 
 const ReactNativeZeroMQAndroid = NativeModules.ReactNativeZeroMQAndroid;
+const ReactNativeZeroMQiOS = NativeModules.ReactNativeZeroMQiOS;
 
 let bridge = null;
 let notification_listeners = [];
@@ -20,6 +21,14 @@ let call_notification_listeners = function (notification) {
 switch (Platform.OS) {
   case 'android':
     bridge = ReactNativeZeroMQAndroid;
+    DeviceEventEmitter.addListener('redis.event', (notification) => {
+      notification = (notification && notification.result);
+      call_notification_listeners(notification);
+    });
+    break;
+  
+  case 'ios':
+    bridge = ReactNativeZeroMQiOS;
     DeviceEventEmitter.addListener('redis.event', (notification) => {
       notification = (notification && notification.result);
       call_notification_listeners(notification);
