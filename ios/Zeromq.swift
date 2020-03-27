@@ -38,6 +38,10 @@ class Zeromq: NSObject, RCTBridgeModule {
             "ZMQ_DEALER": SwiftyZeroMQ.SocketType.dealer.rawValue,
             "ZMQ_ROUTER": SwiftyZeroMQ.SocketType.router.rawValue,
             "ZMQ_PAIR":   SwiftyZeroMQ.SocketType.pair.rawValue,
+            
+            "ZMQ_DONTWAIT": SwiftyZeroMQ.SocketSendRecvOption.dontWait.rawValue,
+            "ZMQ_NOBLOCK":  SwiftyZeroMQ.SocketSendRecvOption.dontWait.rawValue,
+            "ZMQ_SNDMORE":  SwiftyZeroMQ.SocketSendRecvOption.sendMore.rawValue,
 
             "ZMQ_EVENT_CONNECTED":       SwiftyZeroMQ.SocketEvents.connected.rawValue,
             "ZMQ_EVENT_CONNECT_DELAYED": SwiftyZeroMQ.SocketEvents.connectDelayed.rawValue,
