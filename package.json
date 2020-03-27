@@ -23,7 +23,8 @@
   "keywords": [
     "react-component",
     "react-native",
-    "android"
+    "android",
+    "ios"
   ],
   "bugs": {
     "url": "https://github.com/olehs/react-native-zeromq/issues"
