@@ -105,9 +105,7 @@ class Zeromq: NSObject, RCTBridgeModule {
     @objc
     func socketCreate(_ sockType: Int32, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
-            guard let socketType = SwiftyZeroMQ.SocketType.init(rawValue: sockType) else {
-                throw "Unknown sockType \(sockType)"
-            }
+            let socketType = try SwiftyZeroMQ.SocketType.init(sockType)
             let sock = try self.socket(socketType)
             return self.newObject(sock)
         }
