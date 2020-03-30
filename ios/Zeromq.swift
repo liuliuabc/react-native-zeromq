@@ -9,17 +9,17 @@ class Zeromq: NSObject, RCTBridgeModule {
     var context: SwiftyZeroMQ.Context?
     var storage: [String: SwiftyZeroMQ.Socket] = [:]
     
+    override init() {
+        super.init()
+        context = try? SwiftyZeroMQ.Context()
+    }
+    
     static func moduleName() -> String! {
         return "Zeromq"
     }
     
     static func requiresMainQueueSetup() -> Bool {
         return false
-    }
-    
-    override init() {
-        super.init()
-        context = try? SwiftyZeroMQ.Context()
     }
     
     @objc
@@ -42,7 +42,7 @@ class Zeromq: NSObject, RCTBridgeModule {
             "ZMQ_DONTWAIT": SwiftyZeroMQ.SocketSendRecvOption.dontWait.rawValue,
             "ZMQ_NOBLOCK":  SwiftyZeroMQ.SocketSendRecvOption.dontWait.rawValue,
             "ZMQ_SNDMORE":  SwiftyZeroMQ.SocketSendRecvOption.sendMore.rawValue,
-
+            
             "ZMQ_EVENT_CONNECTED":       SwiftyZeroMQ.SocketEvents.connected.rawValue,
             "ZMQ_EVENT_CONNECT_DELAYED": SwiftyZeroMQ.SocketEvents.connectDelayed.rawValue,
             "ZMQ_EVENT_CONNECT_RETRIED": SwiftyZeroMQ.SocketEvents.connectRetried.rawValue,
@@ -58,18 +58,26 @@ class Zeromq: NSObject, RCTBridgeModule {
         ]
     }
     
-    private func task(
+    private func task(_ resolve: RCTPromiseResolveBlock, _ reject: RCTPromiseRejectBlock, _ job: () throws -> Any?) {
+        do {
+            let result = try job()
+            resolve(result)
+        } catch (let e) {
+            if let zme = e as? SwiftyZeroMQ5.SwiftyZeroMQ.ZeroMQError {
+                reject("ZMQERROR", zme.description, zme)
+            } else {
+                reject("ERROR", e.localizedDescription, e)
+            }
+        }
+    }
+    
+    private func asyncTask(
         _ resolve: @escaping RCTPromiseResolveBlock,
         _ reject: @escaping RCTPromiseRejectBlock,
         _ job: @escaping () throws -> Any?
     ) {
         DispatchQueue.global().async {
-            do {
-                let result = try job()
-                resolve(result)
-            } catch (let e) {
-                reject("ZMQERROR", e.localizedDescription, e)
-            }
+            self.task(resolve, reject, job)
         }
     }
     
@@ -92,10 +100,7 @@ class Zeromq: NSObject, RCTBridgeModule {
     
     private func closeContext(_ forced: Bool) throws -> Bool {
         if (storage.count == 0 || forced) {
-            if (context != nil) {
-                try context?.terminate()
-                context = nil
-            }
+            try context?.terminate()
             return true
         }
         return false
@@ -109,7 +114,7 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
-    func socketCreate(_ sockType: Int32, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func socketCreate(_ sockType: Int32, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let socketType = try SwiftyZeroMQ.SocketType.init(sockType)
             let sock = try self.socket(socketType)
@@ -118,7 +123,7 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
-    func socketBind(_ uuid: String, endpoint: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func socketBind(_ uuid: String, endpoint: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
             return try sock.bind(endpoint)
@@ -126,7 +131,7 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
-    func socketConnect(_ uuid: String, endpoint: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func socketConnect(_ uuid: String, endpoint: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
             return try sock.connect(endpoint)
@@ -134,7 +139,7 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
-    func socketDisconnect(_ uuid: String, endpoint: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func socketDisconnect(_ uuid: String, endpoint: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
             return try sock.disconnect(endpoint)
@@ -142,7 +147,7 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
-    func socketClose(_ uuid: String, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func socketClose(_ uuid: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
             try sock.close()
@@ -151,14 +156,14 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
-    func destory(_ forced: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func destory(_ forced: Bool, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             return try self.closeContext(forced)
         }
     }
     
     @objc
-    func setSocketIdentity(_ uuid: String, value: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func setSocketIdentity(_ uuid: String, value: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
             return try sock.setIdentity(value)
@@ -167,7 +172,7 @@ class Zeromq: NSObject, RCTBridgeModule {
     
     @objc
     func socketSend(_ uuid: String, body: [String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        self.task(resolve, reject) {
+        self.asyncTask(resolve, reject) {
             let sock = try self.getObject(uuid)
             for data in body.dropLast() {
                 try sock.send(string: data, options: .sendMore)
@@ -178,7 +183,7 @@ class Zeromq: NSObject, RCTBridgeModule {
     
     @objc
     func socketRecv(_ uuid: String, flag: Int32, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        self.task(resolve, reject) {
+        self.asyncTask(resolve, reject) {
             let sock = try self.getObject(uuid)
             let msg = try sock.recvMultipart()
             return msg.map { String(data: $0, encoding: String.Encoding.utf8) }
@@ -187,7 +192,7 @@ class Zeromq: NSObject, RCTBridgeModule {
     
     @objc
     func socketRecvEvent(_ uuid: String, flags: Int32, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        self.task(resolve, reject) {
+        self.asyncTask(resolve, reject) {
             let sock = try self.getObject(uuid)
             let msg = try sock.recvMultipart()
             if msg.count < 2 { return nil }
@@ -208,7 +213,7 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
-    func socketSubscribe(_ uuid: String, topic: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func socketSubscribe(_ uuid: String, topic: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
             return try sock.setSubscribe(topic)
@@ -216,7 +221,7 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
-    func socketUnsubscribe(_ uuid: String, topic: String?, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func socketUnsubscribe(_ uuid: String, topic: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
             return try sock.setUnsubscribe(topic)
@@ -224,7 +229,7 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
-    func socketMonitor(_ uuid: String, endpoint: String, events: Int32, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func socketMonitor(_ uuid: String, endpoint: String, events: Int32, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
             return try sock.monitor(endpoint, events: SwiftyZeroMQ.SocketEvents.init(rawValue: events))
@@ -232,7 +237,7 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
-    func setMaxReconnectInterval(_ uuid: String, value: Int32, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func setMaxReconnectInterval(_ uuid: String, value: Int32, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
             return try sock.setMaxReconnectInterval(value)
@@ -240,15 +245,15 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
-    func setSendTimeOut(_ uuid: String, value: Int32, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func setSendTimeOut(_ uuid: String, value: Int32, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
             return try sock.setSendTimeout(value)
         }
     }
-
+    
     @objc
-    func setReceiveTimeOut(_ uuid: String, value: Int32, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func setReceiveTimeOut(_ uuid: String, value: Int32, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
             return try sock.setRecvTimeout(value)
@@ -256,7 +261,7 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
-    func setImmediate(_ uuid: String, value: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func setImmediate(_ uuid: String, value: Bool, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
             return try sock.setImmediate(value)
@@ -264,7 +269,7 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
-    func setLinger(_ uuid: String, value: Int32, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func setLinger(_ uuid: String, value: Int32, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
             return try sock.setLinger(value)

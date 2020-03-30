@@ -91,7 +91,6 @@ export class ZMQEvents extends EventEmitter {
       }
     } finally {
       await this._bridge.socketMonitor(this._socket.uuid, null, 0);
-      console.log("socket monitor closed");
     }
   }
 
