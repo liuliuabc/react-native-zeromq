@@ -13,6 +13,7 @@ RCT_EXTERN_METHOD(socketRecvEvent:(NSString *)uuid flags:(NSInteger)flags resolv
 RCT_EXTERN_METHOD(socketSubscribe:(NSString *)uuid topic:(NSString *)topic resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(socketUnsubscribe:(NSString *)uuid topic:(NSString *)topic resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(socketMonitor:(NSString *)uuid endpoint:(NSString *)endpoint events:(NSInteger)events resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
+RCT_EXTERN_METHOD(setMaxReconnectInterval:(NSString *)uuid value:(NSInteger)value resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(setSendTimeOut:(NSString *)uuid value:(NSInteger)value resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(setReceiveTimeOut:(NSString *)uuid value:(NSInteger)value resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(setImmediate:(NSString *)uuid value:(BOOL)value resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
