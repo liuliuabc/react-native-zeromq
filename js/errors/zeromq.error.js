@@ -2,15 +2,15 @@ import { BaseClass } from "../base-class";
 
 export class ZMQError extends BaseClass(Error) {
   constructor(details, object) {
-    super('ZeroMQ internal error');
+    super("ZeroMQ internal error");
 
-    this.name    = "ZMQError";
+    this.name = "ZMQError";
     this.details = details;
-    this.object  = object;
+    this.object = object;
 
     if (details.code === "ERNINT") {
       this.details = details.message;
-      this.object  = details.details;
+      this.object = details.details;
     }
   }
 }

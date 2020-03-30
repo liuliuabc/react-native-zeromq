@@ -1,15 +1,14 @@
-import { ZMQEvents } from './events'
+import { ZMQEvents } from "./events";
 
 export class ZMQSocket {
-
   _bridge = null;
   _events = null;
-  _uuid   = "";
-  _addr   = "";
+  _uuid = "";
+  _addr = "";
 
   constructor(bridge, uuid) {
     this._bridge = bridge;
-    this._uuid   = uuid;
+    this._uuid = uuid;
   }
 
   get address() {
@@ -27,20 +26,24 @@ export class ZMQSocket {
     return this._events;
   }
 
-  setSendTimeout(sendTimeout) {
-    return this._bridge.setSendTimeOut(this._uuid, sendTimeout);
+  setSendTimeout(value) {
+    return this._bridge.setSendTimeOut(this._uuid, value);
   }
 
-  setReceiveTimeout(receiveTimeout) {
-    return this._bridge.setReceiveTimeOut(this._uuid, receiveTimeout);
+  setMaxReconnectInterval(value) {
+    return this._bridge.setMaxReconnectInterval(this._uuid, value);
+  }
+
+  setReceiveTimeout(value) {
+    return this._bridge.setReceiveTimeOut(this._uuid, value);
   }
 
   setImmediate(immediate) {
     return this._bridge.setImmediate(this._uuid, immediate);
   }
 
-  setLinger(linger) {
-    return this._bridge.setLinger(this._uuid, linger);
+  setLinger(value) {
+    return this._bridge.setLinger(this._uuid, value);
   }
 
   bind(addr) {
@@ -69,13 +72,13 @@ export class ZMQSocket {
       await this._events.close();
       this._events = null;
     }
-    
+
     const answ = await this._bridge.socketClose(this._uuid);
     this._uuid = "";
     this._addr = "";
     return answ;
   }
-  
+
   setIdentity(id) {
     return this._bridge.setIdentity(this._uuid, id);
   }
@@ -108,5 +111,4 @@ export class ZMQSocket {
   hasMore() {
     return this._bridge.socketHasMore(this._uuid);
   }
-
 }

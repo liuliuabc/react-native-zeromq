@@ -1,31 +1,30 @@
-import Core from './core'
-import { ZMQSocket } from './socket'
-import { ZMQSocketTypeError } from './errors'
+import Core from "./core";
+import { ZMQSocket } from "./socket";
+import { ZMQSocketTypeError } from "./errors";
 
 export class ZeroMQ {
-
   static SOCKET = {
     TYPE: {
-      REP:    Core.bridge.ZMQ_REP,
-      REQ:    Core.bridge.ZMQ_REQ,
+      REP: Core.bridge.ZMQ_REP,
+      REQ: Core.bridge.ZMQ_REQ,
 
-      XREP:   Core.bridge.ZMQ_XREP,
-      XREQ:   Core.bridge.ZMQ_XREQ,
+      XREP: Core.bridge.ZMQ_XREP,
+      XREQ: Core.bridge.ZMQ_XREQ,
 
-      PUB:    Core.bridge.ZMQ_PUB,
-      SUB:    Core.bridge.ZMQ_SUB,
+      PUB: Core.bridge.ZMQ_PUB,
+      SUB: Core.bridge.ZMQ_SUB,
 
-      XPUB:   Core.bridge.ZMQ_XPUB,
-      XSUB:   Core.bridge.ZMQ_XSUB,
+      XPUB: Core.bridge.ZMQ_XPUB,
+      XSUB: Core.bridge.ZMQ_XSUB,
 
       DEALER: Core.bridge.ZMQ_DEALER,
       ROUTER: Core.bridge.ZMQ_ROUTER,
-      PAIR:   Core.bridge.ZMQ_PAIR,
+      PAIR: Core.bridge.ZMQ_PAIR
     },
     OPTS: {
-      DONT_WAIT:  Core.bridge.ZMQ_DONTWAIT,
-      NO_BLOCK:   Core.bridge.ZMQ_NOBLOCK,
-      SEND_MORE:  Core.bridge.ZMQ_SNDMORE,
+      DONT_WAIT: Core.bridge.ZMQ_DONTWAIT,
+      NO_BLOCK: Core.bridge.ZMQ_NOBLOCK,
+      SEND_MORE: Core.bridge.ZMQ_SNDMORE
     }
   };
 
@@ -37,8 +36,9 @@ export class ZeroMQ {
       return Promise.reject(new ZMQSocketTypeError());
     }
 
-    return Core.bridge.socketCreate(socType)
-    .then(uuid => new ZMQSocket(Core.bridge, uuid));
+    return Core.bridge
+      .socketCreate(socType)
+      .then(uuid => new ZMQSocket(Core.bridge, uuid));
   }
 
   static destroy(forced) {

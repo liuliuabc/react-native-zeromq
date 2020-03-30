@@ -173,24 +173,36 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
 
     @ReactMethod
     @SuppressWarnings("unused")
-    public void setSendTimeOut(final String uuid, final int sendTimeout, final Promise promise) {
+    public void setMaxReconnectInterval(final String uuid, final int value, final Promise promise) {
         (new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
-                return socket.setSendTimeOut(sendTimeout);
+                return socket.setReconnectIVLMax(value);
             }
         }).start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
-    public void setReceiveTimeOut(final String uuid, final int receiveTimeout, final Promise promise) {
+    public void setSendTimeOut(final String uuid, final int value, final Promise promise) {
         (new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
-                return socket.setReceiveTimeOut(receiveTimeout);
+                return socket.setSendTimeOut(value);
+            }
+        }).start();
+    }
+
+    @ReactMethod
+    @SuppressWarnings("unused")
+    public void setReceiveTimeOut(final String uuid, final int value, final Promise promise) {
+        (new ReactTask(promise) {
+            @Override
+            Object run() throws Exception {
+                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
+                return socket.setReceiveTimeOut(value);
             }
         }).start();
     }
@@ -209,12 +221,12 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
 
     @ReactMethod
     @SuppressWarnings("unused")
-    public void setLinger(final String uuid, final int linger, final Promise promise) {
+    public void setLinger(final String uuid, final int value, final Promise promise) {
         (new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
-                return socket.setLinger(linger);
+                return socket.setLinger(value);
             }
         }).start();
     }
