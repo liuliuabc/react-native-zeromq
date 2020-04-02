@@ -383,7 +383,7 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 return socket.monitor(addr, events);
             }
-        }).startAsync();
+        }).start();
     }
 
     @ReactMethod
