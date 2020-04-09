@@ -88,8 +88,17 @@ export class ZMQSocket {
     return this._bridge.socketSend(this._uuid, msg);
   }
 
+  sendBase64(body) {
+    const msg = Array.isArray(body) ? body : [body];
+    return this._bridge.socketSendBase64(this._uuid, msg);
+  }
+
   recv(flag) {
     return this._bridge.socketRecv(this._uuid, flag || 0);
+  }
+
+  recvBase64(flag) {
+    return this._bridge.socketRecvBase64(this._uuid, flag || 0);
   }
 
   recvEvent(flags) {

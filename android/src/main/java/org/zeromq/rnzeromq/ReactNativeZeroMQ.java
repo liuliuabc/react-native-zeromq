@@ -1,6 +1,8 @@
 package org.zeromq.rnzeromq;
 
 
+import android.util.Base64;
+
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -309,6 +311,22 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
 
     @ReactMethod
     @SuppressWarnings("unused")
+    public void socketSendBase64(final String uuid, final ReadableArray body, final Promise promise) {
+        (new ReactTask(promise) {
+            @Override
+            Object run() throws Exception {
+                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
+                ZMsg msg = new ZMsg();
+                for (int i = 0; i < body.size(); i++) {
+                    msg.add(Base64.decode(body.getString(i), Base64.DEFAULT));
+                }
+                return msg.send(socket);
+            }
+        }).startAsync();
+    }
+
+    @ReactMethod
+    @SuppressWarnings("unused")
     public void socketRecv(final String uuid, final Integer flag, final Promise promise) {
         (new ReactTask(promise) {
             @Override
@@ -321,6 +339,26 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                 WritableArray arr = new WritableNativeArray();
                 for (ZFrame f : msg) {
                     arr.pushString(f.getString(ZMQ.CHARSET));
+                }
+                return arr;
+            }
+        }).startAsync();
+    }
+
+    @ReactMethod
+    @SuppressWarnings("unused")
+    public void socketRecvBase64(final String uuid, final Integer flag, final Promise promise) {
+        (new ReactTask(promise) {
+            @Override
+            Object run() throws Exception {
+                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
+                ZMsg msg = ZMsg.recvMsg(socket, flag);
+                if (msg == null) {
+                    return null;
+                }
+                WritableArray arr = new WritableNativeArray();
+                for (ZFrame f : msg) {
+                    arr.pushString(Base64.encodeToString(f.getData(), Base64.DEFAULT));
                 }
                 return arr;
             }
