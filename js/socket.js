@@ -1,3 +1,4 @@
+import { Buffer } from "buffer/"
 import msgpack from "msgpack-lite";
 
 import { ZMQEvents } from "./events";
@@ -96,7 +97,10 @@ export class ZMQSocket {
     }
 
     const msg = Array.isArray(body) ? body : [body];
-    const data = msg.map(m => msgpack.encode(m).toString("base64"));
+    const data = msg.map(m => {
+      const buffer = Buffer(msgpack.encode(m));
+      return buffer.toString("base64");
+    });
     return this.sendBase64(data);
   }
 
@@ -115,8 +119,9 @@ export class ZMQSocket {
       return this.recvStr(flag);
     }
 
-    const msg = this.recvBase64(flag);
-    return msg.map(m => msgpack.decode(Buffer.from(m, "base64")));
+    return this.recvBase64(flag).then(msg=>
+      msg.map(m => msgpack.decode(Buffer.from(m, "base64")))
+    );
   }
 
   recvStr(flag) {
