@@ -1,3 +1,5 @@
+import msgpack from "msgpack-lite";
+
 import { ZMQEvents } from "./events";
 
 export class ZMQSocket {
@@ -9,6 +11,7 @@ export class ZMQSocket {
   constructor(bridge, uuid) {
     this._bridge = bridge;
     this._uuid = uuid;
+    this._msgPack = false;
   }
 
   get address() {
@@ -24,6 +27,10 @@ export class ZMQSocket {
       this._events = new ZMQEvents(this, this._bridge);
     }
     return this._events;
+  }
+
+  setMsgPack(value) {
+    this._msgPack = value;
   }
 
   setSendTimeout(value) {
@@ -84,6 +91,16 @@ export class ZMQSocket {
   }
 
   send(body) {
+    if (!this._msgPack) {
+      return this.sendStr(body);
+    }
+
+    const msg = Array.isArray(body) ? body : [body];
+    const data = msg.map(m => msgpack.encode(m).toString("base64"));
+    return this.sendBase64(data);
+  }
+
+  sendStr(body) {
     const msg = Array.isArray(body) ? body : [body];
     return this._bridge.socketSend(this._uuid, msg);
   }
@@ -94,6 +111,15 @@ export class ZMQSocket {
   }
 
   recv(flag) {
+    if (!this._msgPack) {
+      return this.recvStr(flag);
+    }
+
+    const msg = this.recvBase64(flag);
+    return msg.map(m => msgpack.decode(Buffer.from(m, "base64")));
+  }
+
+  recvStr(flag) {
     return this._bridge.socketRecv(this._uuid, flag || 0);
   }
 
