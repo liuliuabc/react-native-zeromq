@@ -8,7 +8,9 @@ RCT_EXTERN_METHOD(socketClose:(NSString *)uuid resolve:(RCTPromiseResolveBlock)r
 RCT_EXTERN_METHOD(destory:(BOOL)forced resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(setSocketIdentity:(NSString *)uuid value:(NSString *)value resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(socketSend:(NSString *)uuid body:(NSArray *)body resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
+RCT_EXTERN_METHOD(socketSendBase64:(NSString *)uuid body:(NSArray *)body resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(socketRecv:(NSString *)uuid flag:(NSInteger)flag resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
+RCT_EXTERN_METHOD(socketRecvBase64:(NSString *)uuid flag:(NSInteger)flag resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(socketRecvEvent:(NSString *)uuid flags:(NSInteger)flags resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(socketSubscribe:(NSString *)uuid topic:(NSString *)topic resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(socketUnsubscribe:(NSString *)uuid topic:(NSString *)topic resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
