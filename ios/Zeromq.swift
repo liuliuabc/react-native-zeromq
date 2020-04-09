@@ -182,11 +182,31 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
+    func socketSendBase64(_ uuid: String, body: [String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        self.asyncTask(resolve, reject) {
+            let sock = try self.getObject(uuid)
+            for data in body.dropLast() {
+                try sock.send(data: Data(base64Encoded: data)!, options: .sendMore)
+            }
+            return try sock.send(data: Data(base64Encoded: body.last!)!, options: .none)
+        }
+    }
+    
+    @objc
     func socketRecv(_ uuid: String, flag: Int32, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         self.asyncTask(resolve, reject) {
             let sock = try self.getObject(uuid)
             let msg = try sock.recvMultipart()
             return msg.map { String(data: $0, encoding: String.Encoding.utf8) }
+        }
+    }
+    
+    @objc
+    func socketRecvBase64(_ uuid: String, flag: Int32, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+        self.asyncTask(resolve, reject) {
+            let sock = try self.getObject(uuid)
+            let msg = try sock.recvMultipart()
+            return msg.map { $0.base64EncodedString() }
         }
     }
     
