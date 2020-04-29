@@ -295,4 +295,12 @@ class Zeromq: NSObject, RCTBridgeModule {
             return try sock.setLinger(value)
         }
     }
+    
+    @objc
+    func setRouterHandover(_ uuid: String, value: Bool, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        self.task(resolve, reject) {
+            let sock = try self.getObject(uuid)
+            return try sock.setRouterHandover(value)
+        }
+    }
 }

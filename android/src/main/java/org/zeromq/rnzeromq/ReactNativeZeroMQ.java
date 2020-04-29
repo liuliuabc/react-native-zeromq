@@ -235,6 +235,18 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
 
     @ReactMethod
     @SuppressWarnings("unused")
+    public void setRouterHandover(final String uuid, final Boolean value, final Promise promise) {
+        (new ReactTask(promise) {
+            @Override
+            Object run() throws Exception {
+                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
+                return socket.setRouterHandover(value);
+            }
+        }).start();
+    }
+
+    @ReactMethod
+    @SuppressWarnings("unused")
     public void socketConnect(final String uuid, final String addr, final Promise promise) {
         (new ReactTask(promise) {
             @Override

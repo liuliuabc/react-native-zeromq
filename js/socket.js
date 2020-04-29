@@ -1,4 +1,3 @@
-import { Buffer } from "buffer/"
 import msgpack from "msgpack-lite";
 
 import { ZMQEvents } from "./events";
@@ -52,6 +51,10 @@ export class ZMQSocket {
 
   setLinger(value) {
     return this._bridge.setLinger(this._uuid, value);
+  }
+
+  setRouterHandover(value) {
+    return this._bridge.setRouterHandover(this._uuid, value);
   }
 
   bind(addr) {

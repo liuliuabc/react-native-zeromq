@@ -20,4 +20,5 @@ RCT_EXTERN_METHOD(setSendTimeOut:(NSString *)uuid value:(NSInteger)value resolve
 RCT_EXTERN_METHOD(setReceiveTimeOut:(NSString *)uuid value:(NSInteger)value resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(setImmediate:(NSString *)uuid value:(BOOL)value resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(setLinger:(NSString *)uuid value:(NSInteger)value resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
+RCT_EXTERN_METHOD(setRouterHandover:(NSString *)uuid value:(BOOL)value resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 @end
