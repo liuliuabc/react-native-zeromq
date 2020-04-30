@@ -160,6 +160,11 @@ export class ZMQSocket {
     return this._bridge.socketSend(this._uuid, msg, true);
   }
 
+  sendBuffer(body) {
+    const msg = Array.isArray(body) ? body : [body];
+    return this._bridge.socketSend(this._uuid, msg.map(b => b.toString("base64")), true); 
+  }
+
   recv(flag, base64 = false) {
     if (!this._msgPack) {
       return base64 ? this.recvBase64(flag) : this.recvStr(flag);
@@ -176,6 +181,10 @@ export class ZMQSocket {
 
   recvBase64(flag) {
     return this._bridge.socketRecv(this._uuid, flag || 0, true);
+  }
+
+  recvBuffer(flag) {
+    return recvBase64(flag).then(msg => msg.map(m => Buffer.from(m, "base64")));
   }
 
   recvEvent(flags) {
