@@ -163,53 +163,41 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
-    func setSocketIdentity(_ uuid: String, value: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    func setSocketIdentity(_ uuid: String, value: String?, base64: Bool, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
-            return try sock.setIdentity(value)
+            if base64 {
+                return try sock.setIdentity(data: value)
+            } else {
+                return try sock.setIdentity(value)
+            }
         }
     }
     
     @objc
-    func socketSend(_ uuid: String, body: [String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func socketSend(_ uuid: String, body: [String], base64: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         self.asyncTask(resolve, reject) {
             let sock = try self.getObject(uuid)
             for data in body.dropLast() {
                 try sock.send(string: data, options: .sendMore)
             }
-            return try sock.send(string: body.last!, options: .none)
-        }
-    }
-    
-    @objc
-    func socketSendBase64(_ uuid: String, body: [String], resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        self.asyncTask(resolve, reject) {
-            let sock = try self.getObject(uuid)
-            for data in body.dropLast() {
-                try sock.send(data: Data(base64Encoded: data)!, options: .sendMore)
+            if base64 {
+                return try sock.send(data: Data(base64Encoded: body.last!)!, options: .none)
+            } else {
+                return try sock.send(string: body.last!, options: .none)
             }
-            return try sock.send(data: Data(base64Encoded: body.last!)!, options: .none)
         }
     }
-    
+
     @objc
-    func socketRecv(_ uuid: String, flag: Int32, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
+    func socketRecv(_ uuid: String, flag: Int32, base64: Bool, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         self.asyncTask(resolve, reject) {
             let sock = try self.getObject(uuid)
             let msg = try sock.recvMultipart()
-            return msg.map { String(data: $0, encoding: String.Encoding.utf8) }
+            return msg.map { base64 ? $0.base64EncodedString() : String(data: $0, encoding: String.Encoding.utf8) }
         }
     }
-    
-    @objc
-    func socketRecvBase64(_ uuid: String, flag: Int32, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-        self.asyncTask(resolve, reject) {
-            let sock = try self.getObject(uuid)
-            let msg = try sock.recvMultipart()
-            return msg.map { $0.base64EncodedString() }
-        }
-    }
-    
+        
     @objc
     func socketRecvEvent(_ uuid: String, flags: Int32, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         self.asyncTask(resolve, reject) {
@@ -233,18 +221,26 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
-    func socketSubscribe(_ uuid: String, topic: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    func socketSubscribe(_ uuid: String, topic: String?, base64: Bool, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
-            return try sock.setSubscribe(topic)
+            if base64 {
+                return try sock.setSubscribe(data: Data(base64Encoded: topic)!)
+            } else {
+                return try sock.setSubscribe(topic)
+            }
         }
     }
     
     @objc
-    func socketUnsubscribe(_ uuid: String, topic: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    func socketUnsubscribe(_ uuid: String, topic: String?, base64: Bool, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
-            return try sock.setUnsubscribe(topic)
+            if base64 {
+                return try sock.setUnsubscribe(data: Data(base64Encoded: topic)!)
+            } else {
+                return try sock.setUnsubscribe(topic)
+            }
         }
     }
     
@@ -305,18 +301,10 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
-    func setRoutingId(_ uuid: String, value: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    func setRoutingId(_ uuid: String, value: String, base64: Bool, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
-            return try sock.setRoutingId(string: value)
-        }
-    }
-    
-    @objc
-    func setRoutingIdBase64(_ uuid: String, value: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-        self.task(resolve, reject) {
-            let sock = try self.getObject(uuid)
-            return try sock.setRoutingId(data: Data(base64Encoded: value)!)
+            return base64 ? try sock.setRoutingId(data: Data(base64Encoded: value)!) : try sock.setRoutingId(value)
         }
     }
 }

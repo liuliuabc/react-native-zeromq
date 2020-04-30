@@ -17,5 +17,5 @@ Pod::Spec.new do |s|
   s.swift_version = "5"
 
   s.dependency "React"
-  s.dependency "SwiftyZeroMQ5"
+  s.dependency "SwiftyZeroMQ5" ~> '1.3.0'
 end
