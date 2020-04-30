@@ -134,7 +134,7 @@ export class ZMQSocket {
       base64 = true;
       value = value.toString("base64");
     }
-    return this._bridge.setIdentity(this._uuid, value, base64);
+    return this._bridge.setSocketIdentity(this._uuid, value, base64);
   }
 
   send(body, base64 = false) {
