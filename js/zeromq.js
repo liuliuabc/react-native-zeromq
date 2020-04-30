@@ -17,8 +17,12 @@ export class ZeroMQ {
       XPUB: Core.bridge.ZMQ_XPUB,
       XSUB: Core.bridge.ZMQ_XSUB,
 
+      PUSH: Core.bridge.ZMQ_PUSH,
+      PULL: Core.bridge.ZMQ_PULL,
+
       DEALER: Core.bridge.ZMQ_DEALER,
       ROUTER: Core.bridge.ZMQ_ROUTER,
+
       PAIR: Core.bridge.ZMQ_PAIR
     },
     OPTS: {
@@ -30,7 +34,43 @@ export class ZeroMQ {
 
   // @TODO: add more ...
 
-  static socket(socType) {
+  static Reply(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.REP, options);
+  }
+
+  static Request(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.REQ, options);
+  }
+
+  static Publisher(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.PUB, options);
+  }
+
+  static Subscriber(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.SUB, options);
+  }
+
+  static Push(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.PUSH, options);
+  }
+
+  static Pull(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.PULL, options);
+  }
+
+  static Dealer(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.DEALER, options);
+  }
+
+  static Router(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.ROUTER, options);
+  }
+
+  static Pair(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.PAIR, options);
+  }
+
+  static socket(socType, options) {
     let _validSocTypes = Object.values(ZeroMQ.SOCKET.TYPE);
     if (!~_validSocTypes.indexOf(socType)) {
       return Promise.reject(new ZMQSocketTypeError());
@@ -38,7 +78,8 @@ export class ZeroMQ {
 
     return Core.bridge
       .socketCreate(socType)
-      .then(uuid => new ZMQSocket(Core.bridge, uuid));
+      .then(uuid => new ZMQSocket(Core.bridge, uuid))
+      .then(socket => socket.setOptions(options));
   }
 
   static destroy(forced) {

@@ -29,6 +29,33 @@ export class ZMQSocket {
     return this._events;
   }
 
+  setOptions(options) {
+    return Promise.all(
+      Object.keys(options).map((key) => {
+        const value = options[key];
+        switch (key) {
+          case "sendTimeout":
+            return this.setSendTimeout(value);
+          case "reconnectMaxInterval":
+            return this.setMaxReconnectInterval(value);
+          case "receiveTimeout":
+            return this.setReceiveTimeout(value);
+          case "immediate":
+            return this.setImmediate(value);
+          case "linger":
+            return this.setLinger(value);
+          case "handover":
+            return this.setRouterHandover(value);
+          case "routingId":
+            return this.setRoutingId(value);
+
+          default:
+            return Promise.resolve(); // shoud we ignore unknown options ?
+        }
+      })
+    ).then(() => this);
+  }
+
   setMsgPack(value) {
     this._msgPack = value;
   }
@@ -57,22 +84,28 @@ export class ZMQSocket {
     return this._bridge.setRouterHandover(this._uuid, value);
   }
 
+  setRoutingId(value) {
+    return value instanceof Buffer
+      ? this._bridge.setRoutingIdBase64(this._uuid, value.toString("base64"))
+      : this._bridge.setRoutingId(this._uuid, value);
+  }
+
   bind(addr) {
-    return this._bridge.socketBind(this._uuid, addr).then(answ => {
+    return this._bridge.socketBind(this._uuid, addr).then((answ) => {
       this._addr = addr;
       return answ;
     });
   }
 
   connect(addr) {
-    return this._bridge.socketConnect(this._uuid, addr).then(answ => {
+    return this._bridge.socketConnect(this._uuid, addr).then((answ) => {
       this._addr = addr;
       return answ;
     });
   }
 
   disconnect(addr) {
-    return this._bridge.socketDisconnect(this._uuid, addr).then(answ => {
+    return this._bridge.socketDisconnect(this._uuid, addr).then((answ) => {
       this._addr = addr;
       return answ;
     });
@@ -100,7 +133,7 @@ export class ZMQSocket {
     }
 
     const msg = Array.isArray(body) ? body : [body];
-    const data = msg.map(m => {
+    const data = msg.map((m) => {
       const buffer = Buffer(msgpack.encode(m));
       return buffer.toString("base64");
     });
@@ -122,8 +155,8 @@ export class ZMQSocket {
       return this.recvStr(flag);
     }
 
-    return this.recvBase64(flag).then(msg=>
-      msg.map(m => msgpack.decode(Buffer.from(m, "base64")))
+    return this.recvBase64(flag).then((msg) =>
+      msg.map((m) => msgpack.decode(Buffer.from(m, "base64")))
     );
   }
 

@@ -303,4 +303,20 @@ class Zeromq: NSObject, RCTBridgeModule {
             return try sock.setRouterHandover(value)
         }
     }
+    
+    @objc
+    func setRoutingId(_ uuid: String, value: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        self.task(resolve, reject) {
+            let sock = try self.getObject(uuid)
+            return try sock.setRoutingId(string: value)
+        }
+    }
+    
+    @objc
+    func setRoutingIdBase64(_ uuid: String, value: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        self.task(resolve, reject) {
+            let sock = try self.getObject(uuid)
+            return try sock.setRoutingId(data: Data(base64Encoded: value)!)
+        }
+    }
 }

@@ -1,6 +1,5 @@
 package org.zeromq.rnzeromq;
 
-
 import android.util.Base64;
 
 import com.facebook.react.bridge.Promise;
@@ -24,7 +23,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
-
 
 class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
 
@@ -81,8 +79,12 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
         constants.put("ZMQ_NOBLOCK", ZMQ.NOBLOCK);
         constants.put("ZMQ_SNDMORE", ZMQ.SNDMORE);
 
+        constants.put("ZMQ_PUSH", ZMQ.PUSH);
+        constants.put("ZMQ_PULL", ZMQ.PULL);
+
         constants.put("ZMQ_DEALER", ZMQ.DEALER);
         constants.put("ZMQ_ROUTER", ZMQ.ROUTER);
+
         constants.put("ZMQ_PAIR", ZMQ.PAIR);
 
         constants.put("ZMQ_EVENT_CONNECTED", ZMQ.EVENT_CONNECTED);
@@ -247,6 +249,30 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
 
     @ReactMethod
     @SuppressWarnings("unused")
+    public void setRoutingId(final String uuid, final String value, final Promise promise) {
+        (new ReactTask(promise) {
+            @Override
+            Object run() throws Exception {
+                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
+                return socket.setConnectRid(value);
+            }
+        }).start();
+    }
+
+    @ReactMethod
+    @SuppressWarnings("unused")
+    public void setRoutingIdBase64(final String uuid, final String value, final Promise promise) {
+        (new ReactTask(promise) {
+            @Override
+            Object run() throws Exception {
+                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
+                return socket.setConnectRid(Base64.decode(value, Base64.DEFAULT));
+            }
+        }).start();
+    }
+
+    @ReactMethod
+    @SuppressWarnings("unused")
     public void socketConnect(final String uuid, final String addr, final Promise promise) {
         (new ReactTask(promise) {
             @Override
@@ -393,7 +419,7 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                 map.putString("address", event.getAddress());
                 Object value = event.getValue();
                 if (value != null) {
-                    map.putInt("value", (Integer)value);
+                    map.putInt("value", (Integer) value);
                 }
                 return map;
             }
