@@ -1,5 +1,6 @@
 package org.zeromq.rnzeromq;
 
+import android.annotation.SuppressLint;
 import android.util.Base64;
 
 import com.facebook.react.bridge.Promise;
@@ -13,7 +14,6 @@ import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.bridge.WritableNativeMap;
 
 import org.zeromq.ZMQ;
-import org.zeromq.ZMQException;
 import org.zeromq.ZMsg;
 import org.zeromq.ZFrame;
 
@@ -153,220 +153,218 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
 
     @ReactMethod
     @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void socketCreate(final Integer socType, final Promise promise) {
-        (new ReactTask(promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._socket(socType);
                 return ReactNativeZeroMQ.this._newObject(socket);
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void socketBind(final String uuid, final String addr, final Promise promise) {
-        (new ReactTask(promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 return socket.bind(addr);
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void setMaxReconnectInterval(final String uuid, final int value, final Promise promise) {
-        (new ReactTask(promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 return socket.setReconnectIVLMax(value);
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void setSendTimeOut(final String uuid, final int value, final Promise promise) {
-        (new ReactTask(promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 return socket.setSendTimeOut(value);
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void setReceiveTimeOut(final String uuid, final int value, final Promise promise) {
-        (new ReactTask(promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 return socket.setReceiveTimeOut(value);
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void setImmediate(final String uuid, final Boolean immediate, final Promise promise) {
-        (new ReactTask(promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 return socket.setImmediate((immediate));
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void setLinger(final String uuid, final int value, final Promise promise) {
-        (new ReactTask(promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 return socket.setLinger(value);
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void setRouterHandover(final String uuid, final Boolean value, final Promise promise) {
-        (new ReactTask(promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 return socket.setRouterHandover(value);
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
-    public void setRoutingId(final String uuid, final String value, final Promise promise) {
-        (new ReactTask(promise) {
+    @SuppressLint("StaticFieldLeak")
+    public void setRoutingId(final String uuid, final String id, final Boolean base64, final Promise promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
-                return socket.setConnectRid(value);
+                if (base64) {
+                    return socket.setConnectRid(id);
+                } else {
+                    return socket.setConnectRid(Base64.decode(id, Base64.DEFAULT));
+                }
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
-    public void setRoutingIdBase64(final String uuid, final String value, final Promise promise) {
-        (new ReactTask(promise) {
-            @Override
-            Object run() throws Exception {
-                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
-                return socket.setConnectRid(Base64.decode(value, Base64.DEFAULT));
-            }
-        }).start();
-    }
-
-    @ReactMethod
-    @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void socketConnect(final String uuid, final String addr, final Promise promise) {
-        (new ReactTask(promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 return socket.connect(addr);
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void socketDisconnect(final String uuid, final String addr, final Promise promise) {
-        (new ReactTask(promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 return socket.disconnect(addr);
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void socketClose(final String uuid, final Promise promise) {
-        (new ReactTask(promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 socket.close();
                 return ReactNativeZeroMQ.this._delObject(uuid);
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void destroy(final Boolean forced, final Promise promise) {
-        (new ReactTask(promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 return ReactNativeZeroMQ.this._closeContext(forced);
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
-    public void setSocketIdentity(final String uuid, final String id, final Promise promise) {
-        (new ReactTask(promise) {
+    @SuppressLint("StaticFieldLeak")
+    public void setSocketIdentity(final String uuid, final String id, final Boolean base64, final Promise promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
-                return socket.setIdentity(id.getBytes(ZMQ.CHARSET));
+                final byte[] value = base64 ? Base64.decode(id, Base64.DEFAULT) : id.getBytes(ZMQ.CHARSET);
+                return socket.setIdentity(value);
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
-    public void socketSend(final String uuid, final ReadableArray body, final Promise promise) {
-        (new ReactTask(promise) {
-            @Override
-            Object run() throws Exception {
-                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
-                ZMsg msg = new ZMsg();
-                for (int i = 0; i < body.size(); i++) {
-                    msg.add(body.getString(i));
-                }
-                return msg.send(socket);
-            }
-        }).startAsync();
-    }
-
-    @ReactMethod
-    @SuppressWarnings("unused")
-    public void socketSendBase64(final String uuid, final ReadableArray body, final Promise promise) {
-        (new ReactTask(promise) {
+    @SuppressLint("StaticFieldLeak")
+    public void socketSend(final String uuid, final ReadableArray body, final Boolean base64, final Promise promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 ZMsg msg = new ZMsg();
                 for (int i = 0; i < body.size(); i++) {
-                    msg.add(Base64.decode(body.getString(i), Base64.DEFAULT));
+                    final String value = body.getString(i);
+                    if (base64) {
+                        msg.add(Base64.decode(value, Base64.DEFAULT));
+                    } else {
+                        msg.add(value);
+                    }
                 }
                 return msg.send(socket);
             }
-        }).startAsync();
+        }.startAsync();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
-    public void socketRecv(final String uuid, final Integer flag, final Promise promise) {
-        (new ReactTask(promise) {
+    @SuppressLint("StaticFieldLeak")
+    public void socketRecv(final String uuid, final Integer flag, final Boolean base64, final Promise promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
@@ -376,37 +374,19 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                 }
                 WritableArray arr = new WritableNativeArray();
                 for (ZFrame f : msg) {
-                    arr.pushString(f.getString(ZMQ.CHARSET));
+                    final String value = base64 ? Base64.encodeToString(f.getData(), Base64.DEFAULT) : f.getString(ZMQ.CHARSET);
+                    arr.pushString(value);
                 }
                 return arr;
             }
-        }).startAsync();
+        }.startAsync();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
-    public void socketRecvBase64(final String uuid, final Integer flag, final Promise promise) {
-        (new ReactTask(promise) {
-            @Override
-            Object run() throws Exception {
-                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
-                ZMsg msg = ZMsg.recvMsg(socket, flag);
-                if (msg == null) {
-                    return null;
-                }
-                WritableArray arr = new WritableNativeArray();
-                for (ZFrame f : msg) {
-                    arr.pushString(Base64.encodeToString(f.getData(), Base64.DEFAULT));
-                }
-                return arr;
-            }
-        }).startAsync();
-    }
-
-    @ReactMethod
-    @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void socketRecvEvent(final String uuid, final Integer flags, final Promise promise) {
-        (new ReactTask(promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
@@ -423,65 +403,78 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
                 }
                 return map;
             }
-        }).startAsync();
+        }.startAsync();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
-    public void socketSubscribe(final String uuid, final String topic, final Promise promise) {
-        (new ReactTask(promise) {
+    @SuppressLint("StaticFieldLeak")
+    public void socketSubscribe(final String uuid, final String topic, final Boolean base64, final Promise promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
-                return socket.subscribe(topic);
+                if (base64) {
+                    return socket.subscribe(Base64.decode(topic, Base64.DEFAULT));
+                } else {
+                    return socket.subscribe(topic);
+                }
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
-    public void socketUnsubscribe(final String uuid, final String topic, final Promise promise) {
-        (new ReactTask(promise) {
+    @SuppressLint("StaticFieldLeak")
+    public void socketUnsubscribe(final String uuid, final String topic, final Boolean base64, final Promise promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
-                return socket.unsubscribe(topic);
+                if (base64) {
+                    return socket.unsubscribe(Base64.decode(topic, Base64.DEFAULT));
+                } else {
+                    return socket.unsubscribe(topic);
+                }
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void socketMonitor(final String uuid, @Nullable final String addr, final int events, final Promise promise) {
-        (new ReactTask(promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 return socket.monitor(addr, events);
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void socketHasMore(final String uuid, final Promise promise) {
-        (new ReactTask(promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
                 return socket.hasReceiveMore();
             }
-        }).start();
+        }.start();
     }
 
     @ReactMethod
     @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void getDeviceIdentifier(final Promise promise) {
-        (new ReactTask(promise) {
+        new ReactTask(promise) {
             @Override
             Object run() throws Exception {
                 return ReactNativeZeroMQ.this._getDeviceIdentifier();
             }
-        }).start();
+        }.start();
     }
 }

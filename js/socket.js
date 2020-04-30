@@ -34,6 +34,8 @@ export class ZMQSocket {
       Object.keys(options).map((key) => {
         const value = options[key];
         switch (key) {
+          case "identity":
+            return this.setIdentity(value);
           case "sendTimeout":
             return this.setSendTimeout(value);
           case "reconnectMaxInterval":
@@ -85,9 +87,12 @@ export class ZMQSocket {
   }
 
   setRoutingId(value) {
-    return value instanceof Buffer
-      ? this._bridge.setRoutingIdBase64(this._uuid, value.toString("base64"))
-      : this._bridge.setRoutingId(this._uuid, value);
+    let base64 = false;
+    if (value instanceof Buffer) {
+      base64 = true;
+      value = value.toString("base64");
+    }
+    return this._bridge.setRoutingId(this._uuid, value, base64);
   }
 
   bind(addr) {
@@ -123,13 +128,18 @@ export class ZMQSocket {
     return answ;
   }
 
-  setIdentity(id) {
-    return this._bridge.setIdentity(this._uuid, id);
+  setIdentity(value) {
+    let base64 = false;
+    if (value instanceof Buffer) {
+      base64 = true;
+      value = value.toString("base64");
+    }
+    return this._bridge.setIdentity(this._uuid, value, base64);
   }
 
-  send(body) {
+  send(body, base64 = false) {
     if (!this._msgPack) {
-      return this.sendStr(body);
+      return base64 ? this.sendBase64(body) : this.sendStr(body);
     }
 
     const msg = Array.isArray(body) ? body : [body];
@@ -142,17 +152,17 @@ export class ZMQSocket {
 
   sendStr(body) {
     const msg = Array.isArray(body) ? body : [body];
-    return this._bridge.socketSend(this._uuid, msg);
+    return this._bridge.socketSend(this._uuid, msg, false);
   }
 
   sendBase64(body) {
     const msg = Array.isArray(body) ? body : [body];
-    return this._bridge.socketSendBase64(this._uuid, msg);
+    return this._bridge.socketSend(this._uuid, msg, true);
   }
 
-  recv(flag) {
+  recv(flag, base64 = false) {
     if (!this._msgPack) {
-      return this.recvStr(flag);
+      return base64 ? this.recvBase64(flag) : this.recvStr(flag);
     }
 
     return this.recvBase64(flag).then((msg) =>
@@ -161,11 +171,11 @@ export class ZMQSocket {
   }
 
   recvStr(flag) {
-    return this._bridge.socketRecv(this._uuid, flag || 0);
+    return this._bridge.socketRecv(this._uuid, flag || 0, false);
   }
 
   recvBase64(flag) {
-    return this._bridge.socketRecvBase64(this._uuid, flag || 0);
+    return this._bridge.socketRecv(this._uuid, flag || 0, true);
   }
 
   recvEvent(flags) {
@@ -173,11 +183,21 @@ export class ZMQSocket {
   }
 
   subscribe(topic) {
-    return this._bridge.socketSubscribe(this._uuid, topic);
+    let base64 = false;
+    if (topic instanceof Buffer) {
+      base64 = true;
+      topic = topic.toString("base64");
+    }
+    return this._bridge.socketSubscribe(this._uuid, topic, base64);
   }
 
   unsubscribe(topic) {
-    return this._bridge.socketUnsubscribe(this._uuid, topic);
+    let base64 = false;
+    if (topic instanceof Buffer) {
+      base64 = true;
+      topic = topic.toString("base64");
+    }
+    return this._bridge.socketUnsubscribe(this._uuid, topic, base64);
   }
 
   monitor(addr, events) {
