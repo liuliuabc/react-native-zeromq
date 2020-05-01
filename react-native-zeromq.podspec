@@ -3,7 +3,7 @@ require "json"
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 
 Pod::Spec.new do |s|
-  s.name         = package['name']
+  s.name         = 'react-native-zeromq'
   s.version      = package['version']
   s.summary      = package['description']
   s.license      = package['license']
@@ -17,5 +17,5 @@ Pod::Spec.new do |s|
   s.swift_version = "5"
 
   s.dependency "React"
-  s.dependency "SwiftyZeroMQ5", "~> 1.3.0"
+  s.dependency "SwiftyZeroMQ5", "~> 1.3"
 end
