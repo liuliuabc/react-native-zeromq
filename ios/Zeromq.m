@@ -2,6 +2,7 @@
 @interface RCT_EXTERN_REMAP_MODULE(ReactNativeZeroMQiOS, Zeromq, NSObject)
 RCT_EXTERN_METHOD(socketCreate:(NSInteger)sockType resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(socketBind:(NSString *)uuid endpoint:(NSString *)endpoint resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
+RCT_EXTERN_METHOD(socketUnbind:(NSString *)uuid endpoint:(NSString *)endpoint resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(socketConnect:(NSString *)uuid endpoint:(NSString *)endpoint resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(socketDisconnect:(NSString *)uuid endpoint:(NSString *)endpoint resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);
 RCT_EXTERN_METHOD(socketClose:(NSString *)uuid resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject);

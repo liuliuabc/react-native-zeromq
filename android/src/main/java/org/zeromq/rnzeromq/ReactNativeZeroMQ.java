@@ -180,6 +180,19 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
     @ReactMethod
     @SuppressWarnings("unused")
     @SuppressLint("StaticFieldLeak")
+    public void socketUnbind(final String uuid, final String addr, final Promise promise) {
+        new ReactTask(promise) {
+            @Override
+            Object run() throws Exception {
+                ZMQ.Socket socket = ReactNativeZeroMQ.this._getObject(uuid);
+                return socket.unbind(addr);
+            }
+        }.start();
+    }
+
+    @ReactMethod
+    @SuppressWarnings("unused")
+    @SuppressLint("StaticFieldLeak")
     public void setMaxReconnectInterval(final String uuid, final int value, final Promise promise) {
         new ReactTask(promise) {
             @Override

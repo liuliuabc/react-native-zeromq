@@ -131,6 +131,14 @@ class Zeromq: NSObject, RCTBridgeModule {
     }
     
     @objc
+    func socketUnbind(_ uuid: String, endpoint: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+        self.task(resolve, reject) {
+            let sock = try self.getObject(uuid)
+            return try sock.unbind(endpoint)
+        }
+    }
+    
+    @objc
     func socketConnect(_ uuid: String, endpoint: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)

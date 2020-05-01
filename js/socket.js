@@ -7,11 +7,12 @@ export class ZMQSocket {
   _events = null;
   _uuid = "";
   _addr = "";
+  _msgPack = false;
+  _closed = false;
 
   constructor(bridge, uuid) {
     this._bridge = bridge;
     this._uuid = uuid;
-    this._msgPack = false;
   }
 
   get address() {
@@ -22,6 +23,14 @@ export class ZMQSocket {
     return this._uuid;
   }
 
+  get msgPack() {
+    return this._msgPack;
+  }
+
+  get closed() {
+    return this._closed;
+  }
+
   get events() {
     if (this._events === null) {
       this._events = new ZMQEvents(this, this._bridge);
@@ -29,8 +38,8 @@ export class ZMQSocket {
     return this._events;
   }
 
-  setOptions(options) {
-    return Promise.all(
+  async setOptions(options) {
+    await Promise.all(
       Object.keys(options).map((key) => {
         const value = options[key];
         switch (key) {
@@ -50,12 +59,12 @@ export class ZMQSocket {
             return this.setRouterHandover(value);
           case "routingId":
             return this.setRoutingId(value);
-
           default:
             return Promise.resolve(); // shoud we ignore unknown options ?
         }
       })
-    ).then(() => this);
+    );
+    return this;
   }
 
   setMsgPack(value) {
@@ -102,6 +111,13 @@ export class ZMQSocket {
     });
   }
 
+  unbind(addr) {
+    return this._bridge.socketUnbind(this._uuid, addr).then((answ) => {
+      this._addr = addr;
+      return answ;
+    });
+  }
+
   connect(addr) {
     return this._bridge.socketConnect(this._uuid, addr).then((answ) => {
       this._addr = addr;
@@ -111,7 +127,7 @@ export class ZMQSocket {
 
   disconnect(addr) {
     return this._bridge.socketDisconnect(this._uuid, addr).then((answ) => {
-      this._addr = addr;
+      this._addr = "";
       return answ;
     });
   }
@@ -125,6 +141,7 @@ export class ZMQSocket {
     const answ = await this._bridge.socketClose(this._uuid);
     this._uuid = "";
     this._addr = "";
+    this._closed = true;
     return answ;
   }
 
@@ -162,7 +179,11 @@ export class ZMQSocket {
 
   sendBuffer(body) {
     const msg = Array.isArray(body) ? body : [body];
-    return this._bridge.socketSend(this._uuid, msg.map(b => b.toString("base64")), true); 
+    return this._bridge.socketSend(
+      this._uuid,
+      msg.map((b) => b.toString("base64")),
+      true
+    );
   }
 
   recv(flag, base64 = false) {
@@ -184,8 +205,13 @@ export class ZMQSocket {
   }
 
   recvBuffer(flag) {
-    return recvBase64(flag).then(msg => msg.map(m => Buffer.from(m, "base64")));
+    return this.recvBase64(flag).then((msg) =>
+      msg.map((m) => Buffer.from(m, "base64"))
+    );
   }
+
+  // alias
+  receive = this.recvBuffer;
 
   recvEvent(flags) {
     return this._bridge.socketRecvEvent(this._uuid, flags || 0);
