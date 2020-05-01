@@ -175,10 +175,11 @@ class Zeromq: NSObject, RCTBridgeModule {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
             if base64 {
-                return try sock.setIdentity(data: value)
-            } else {
-                return try sock.setIdentity(value)
+                if let encoded = value, let data = Data(base64Encoded: encoded) {
+                    return try sock.setIdentity(data: data)
+                }
             }
+            return try sock.setIdentity(value)
         }
     }
     
@@ -233,10 +234,11 @@ class Zeromq: NSObject, RCTBridgeModule {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
             if base64 {
-                return try sock.setSubscribe(data: Data(base64Encoded: topic)!)
-            } else {
-                return try sock.setSubscribe(topic)
+                if let encoded = topic, let data = Data(base64Encoded: encoded) {
+                    return try sock.setSubscribe(data: data)
+                }
             }
+            return try sock.setSubscribe(topic)
         }
     }
     
@@ -245,10 +247,11 @@ class Zeromq: NSObject, RCTBridgeModule {
         self.task(resolve, reject) {
             let sock = try self.getObject(uuid)
             if base64 {
-                return try sock.setUnsubscribe(data: Data(base64Encoded: topic)!)
-            } else {
-                return try sock.setUnsubscribe(topic)
+                if let encoded = topic, let data = Data(base64Encoded: encoded) {
+                    return try sock.setUnsubscribe(data: data)
+                }
             }
+            return try sock.setUnsubscribe(topic)
         }
     }
     
