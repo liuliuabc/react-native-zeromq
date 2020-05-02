@@ -79,7 +79,7 @@ export class ZeroMQ {
     return Core.bridge
       .socketCreate(socType)
       .then(uuid => new ZMQSocket(Core.bridge, uuid))
-      .then(socket => socket.setOptions(options));
+      .then(socket => options ? socket.setOptions(options) : socket);
   }
 
   static destroy(forced) {
