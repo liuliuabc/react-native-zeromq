@@ -1,6 +1,6 @@
 {
   "name": "@olehs/react-native-zeromq",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "description": "React Native ZeroMQ client",
   "main": "js/index.js",
   "homepage": "https://github.com/olehs/react-native-zeromq#readme",
