@@ -23,7 +23,8 @@ export class ZeroMQ {
       DEALER: Core.bridge.ZMQ_DEALER,
       ROUTER: Core.bridge.ZMQ_ROUTER,
 
-      PAIR: Core.bridge.ZMQ_PAIR
+      PAIR: Core.bridge.ZMQ_PAIR,
+      STREAM: Core.bridge.ZMQ_STREAM,
     },
     OPTS: {
       DONT_WAIT: Core.bridge.ZMQ_DONTWAIT,
@@ -31,8 +32,6 @@ export class ZeroMQ {
       SEND_MORE: Core.bridge.ZMQ_SNDMORE
     }
   };
-
-  // @TODO: add more ...
 
   static Reply(options = {}) {
     return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.REP, options);
@@ -68,6 +67,10 @@ export class ZeroMQ {
 
   static Pair(options = {}) {
     return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.PAIR, options);
+  }
+
+  static Stream(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.STREAM, options);
   }
 
   static socket(socType, options) {

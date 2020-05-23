@@ -75,10 +75,6 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
         constants.put("ZMQ_XPUB", ZMQ.XPUB);
         constants.put("ZMQ_XSUB", ZMQ.XSUB);
 
-        constants.put("ZMQ_DONTWAIT", ZMQ.DONTWAIT);
-        constants.put("ZMQ_NOBLOCK", ZMQ.NOBLOCK);
-        constants.put("ZMQ_SNDMORE", ZMQ.SNDMORE);
-
         constants.put("ZMQ_PUSH", ZMQ.PUSH);
         constants.put("ZMQ_PULL", ZMQ.PULL);
 
@@ -86,6 +82,11 @@ class ReactNativeZeroMQ extends ReactContextBaseJavaModule {
         constants.put("ZMQ_ROUTER", ZMQ.ROUTER);
 
         constants.put("ZMQ_PAIR", ZMQ.PAIR);
+        constants.put("ZMQ_STREAM", ZMQ.STREAM);
+
+        constants.put("ZMQ_DONTWAIT", ZMQ.DONTWAIT);
+        constants.put("ZMQ_NOBLOCK", ZMQ.NOBLOCK);
+        constants.put("ZMQ_SNDMORE", ZMQ.SNDMORE);
 
         constants.put("ZMQ_EVENT_CONNECTED", ZMQ.EVENT_CONNECTED);
         constants.put("ZMQ_EVENT_CONNECT_DELAYED", ZMQ.EVENT_CONNECT_DELAYED);

@@ -97,7 +97,7 @@ export class ZMQSocket {
 
   setRoutingId(value) {
     let base64 = false;
-    if (value instanceof Buffer) {
+    if (Buffer.isBuffer(value)) {
       base64 = true;
       value = value.toString("base64");
     }
@@ -147,7 +147,7 @@ export class ZMQSocket {
 
   setIdentity(value) {
     let base64 = false;
-    if (value instanceof Buffer) {
+    if (Buffer.isBuffer(value)) {
       base64 = true;
       value = value.toString("base64");
     }
@@ -219,7 +219,7 @@ export class ZMQSocket {
 
   subscribe(topic) {
     let base64 = false;
-    if (topic instanceof Buffer) {
+    if (Buffer.isBuffer(topic)) {
       base64 = true;
       topic = topic.toString("base64");
     }
@@ -228,7 +228,7 @@ export class ZMQSocket {
 
   unsubscribe(topic) {
     let base64 = false;
-    if (topic instanceof Buffer) {
+    if (Buffer.isBuffer(topic)) {
       base64 = true;
       topic = topic.toString("base64");
     }
