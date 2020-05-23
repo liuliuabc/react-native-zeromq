@@ -37,7 +37,9 @@ class Zeromq: NSObject, RCTBridgeModule {
             
             "ZMQ_DEALER": SwiftyZeroMQ.SocketType.dealer.rawValue,
             "ZMQ_ROUTER": SwiftyZeroMQ.SocketType.router.rawValue,
+
             "ZMQ_PAIR":   SwiftyZeroMQ.SocketType.pair.rawValue,
+            "ZMQ_STREAM": SwiftyZeroMQ.SocketType.stream.rawValue,
             
             "ZMQ_DONTWAIT": SwiftyZeroMQ.SocketSendRecvOption.dontWait.rawValue,
             "ZMQ_NOBLOCK":  SwiftyZeroMQ.SocketSendRecvOption.dontWait.rawValue,
