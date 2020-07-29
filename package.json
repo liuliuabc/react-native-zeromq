@@ -1,27 +1,34 @@
 {
-  "name": "react-native-zeromq",
-  "version": "0.0.1",
-  "description": "React Native module for ZeroMQ client platforms: Android",
+  "name": "@olehs/react-native-zeromq",
+  "version": "0.8.5",
+  "description": "React Native ZeroMQ client",
   "main": "js/index.js",
-  "homepage": "https://github.com/zdmitry/react-native-zeromq#readme",
-  "author":   "ZDmitry",
+  "homepage": "https://github.com/olehs/react-native-zeromq#readme",
+  "author": "Oleg Sokolov",
   "dependencies": {
+    "buffer": "^5.5.0",
+    "events": "^3.1.0",
+    "msgpack-lite": "^0.1.26"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0 <17.0.x",
+    "react-native": ">=0.60.0-rc.0 <1.0.x"
   },
   "engines": {
-    "npm": "^2.0.0"
+    "npm": "^8.0.0"
   },
   "license": "MIT",
   "keywords": [
     "react-component",
     "react-native",
     "android",
-    "redis"
+    "ios"
   ],
   "bugs": {
-    "url": "https://github.com/zdmitry/react-native-zeromq/issues"
+    "url": "https://github.com/olehs/react-native-zeromq/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:zdmitry/react-native-zeromq.git"
+    "url": "git+ssh://git@github.com:olehs/react-native-zeromq.git"
   }
 }

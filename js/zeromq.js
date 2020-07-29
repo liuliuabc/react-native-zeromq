@@ -1,79 +1,96 @@
-import Core from './core'
-import { ZMQSocket } from './socket'
-import { ZMQError, ZMQNoAnswerError, ZMQSocketTypeError } from './errors'
+import Core from "./core";
+import { ZMQSocket } from "./socket";
+import { ZMQSocketTypeError } from "./errors";
 
 export class ZeroMQ {
-
   static SOCKET = {
     TYPE: {
-      REP:    Core.bridge.ZMQ_REP,
-      REQ:    Core.bridge.ZMQ_REQ,
+      REP: Core.bridge.ZMQ_REP,
+      REQ: Core.bridge.ZMQ_REQ,
 
-      XREP:   Core.bridge.ZMQ_XREP,
-      XREQ:   Core.bridge.ZMQ_XREQ,
+      XREP: Core.bridge.ZMQ_XREP,
+      XREQ: Core.bridge.ZMQ_XREQ,
 
-      PUB:    Core.bridge.ZMQ_PUB,
-      SUB:    Core.bridge.ZMQ_SUB,
+      PUB: Core.bridge.ZMQ_PUB,
+      SUB: Core.bridge.ZMQ_SUB,
 
-      XPUB:   Core.bridge.ZMQ_XPUB,
-      XSUB:   Core.bridge.ZMQ_XSUB,
+      XPUB: Core.bridge.ZMQ_XPUB,
+      XSUB: Core.bridge.ZMQ_XSUB,
+
+      PUSH: Core.bridge.ZMQ_PUSH,
+      PULL: Core.bridge.ZMQ_PULL,
 
       DEALER: Core.bridge.ZMQ_DEALER,
-      ROUTER: Core.bridge.ZMQ_ROUTER
+      ROUTER: Core.bridge.ZMQ_ROUTER,
+
+      PAIR: Core.bridge.ZMQ_PAIR,
+      STREAM: Core.bridge.ZMQ_STREAM,
     },
     OPTS: {
-      DONT_WAIT:  Core.bridge.ZMQ_DONTWAIT,
-      NO_BLOCK:   Core.bridge.ZMQ_NOBLOCK,
-      SEND_MORE:  Core.bridge.ZMQ_SNDMORE,
+      DONT_WAIT: Core.bridge.ZMQ_DONTWAIT,
+      NO_BLOCK: Core.bridge.ZMQ_NOBLOCK,
+      SEND_MORE: Core.bridge.ZMQ_SNDMORE
     }
   };
 
-  // @TODO: add more ...
+  static Reply(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.REP, options);
+  }
 
-  static socket(socType) {
-    return new Promise((resolve, reject) => {
-      let _validSocTypes = Object.values(ZeroMQ.SOCKET.TYPE);
-      if (!~_validSocTypes.indexOf(socType)) {
-        reject(new ZMQSocketTypeError());
-        return;
-      }
+  static Request(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.REQ, options);
+  }
 
-      Core.bridge.socketCreate(socType, answ => {
-        if (!answ) {
-          reject(new ZMQNoAnswerError());
-          return;
-        }
+  static Publisher(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.PUB, options);
+  }
 
-        if (answ.error) {
-          reject(new ZMQError(answ.error));
-          return;
-        }
+  static Subscriber(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.SUB, options);
+  }
 
-        if (!answ.result) {
-          resolve(null);
-          return;
-        }
+  static Push(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.PUSH, options);
+  }
 
-        resolve(new ZMQSocket(Core.bridge, answ.result));
-      });
-    });
+  static Pull(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.PULL, options);
+  }
+
+  static Dealer(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.DEALER, options);
+  }
+
+  static Router(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.ROUTER, options);
+  }
+
+  static Pair(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.PAIR, options);
+  }
+
+  static Stream(options = {}) {
+    return ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.STREAM, options);
+  }
+
+  static socket(socType, options) {
+    let _validSocTypes = Object.values(ZeroMQ.SOCKET.TYPE);
+    if (!~_validSocTypes.indexOf(socType)) {
+      return Promise.reject(new ZMQSocketTypeError());
+    }
+
+    return Core.bridge
+      .socketCreate(socType)
+      .then(uuid => new ZMQSocket(Core.bridge, uuid))
+      .then(socket => options ? socket.setOptions(options) : socket);
+  }
+
+  static destroy(forced) {
+    return Core.bridge.destroy(!!forced);
   }
 
   static getDeviceIdentifier() {
-    return new Promise((resolve, reject) => {
-      Core.bridge.getDeviceIdentifier(answ => {
-        if (!answ) {
-          reject(new ZMQNoAnswerError());
-          return;
-        }
-
-        if (answ.error) {
-          reject(new ZMQError(answ.error));
-          return;
-        }
-        resolve(answ.result);
-      });
-    });
+    return Core.bridge.getDeviceIdentifier();
   }
 
   static onNotification(callback) {

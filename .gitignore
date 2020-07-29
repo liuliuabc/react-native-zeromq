@@ -26,6 +26,9 @@ project.xcworkspace
 #
 build/
 .idea
+.classpath
+.project
+.settings
 .gradle
 local.properties
 *.iml
@@ -55,3 +58,4 @@ android/app/libs
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
+package-lock.json

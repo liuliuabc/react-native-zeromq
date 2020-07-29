@@ -2,16 +2,14 @@ package org.zeromq.rnzeromq;
 
 import android.os.AsyncTask;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Promise;
 
 
 abstract class ReactTask extends AsyncTask<Object, Void, Object> {
-    private Callback _callback = null;
+    private Promise _promise = null;
 
-    ReactTask(Callback callback) {
-        _callback = callback;
+    ReactTask(Promise promise) {
+        _promise = promise;
     }
 
     @Override
@@ -25,17 +23,9 @@ abstract class ReactTask extends AsyncTask<Object, Void, Object> {
     void start() {
         try {
             Object result = this.run();
-            this._returnJSResult(this._callback, result);
+            this._promise.resolve(result);
         } catch (Exception e) {
-            String      message = e.getMessage();
-            WritableMap details = Arguments.createMap();
-
-            if (e instanceof ReactException) {
-                ReactException re = (ReactException)e;
-                details = re.getDetails();
-            }
-
-            this._raiseJSException(this._callback, "ERNINT", message, details);
+            this._promise.reject("ERNINT", e);
         }
     }
 
@@ -43,35 +33,4 @@ abstract class ReactTask extends AsyncTask<Object, Void, Object> {
         this.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    Object _successResult(Boolean success) {
-        WritableMap successMap = Arguments.createMap();
-        successMap.putBoolean("success", success);
-        return successMap;
-    }
-
-    void _raiseJSException(Callback callback, String code, String message) {
-        _raiseJSException(callback, code, message, null);
-    }
-
-    void _raiseJSException(Callback callback, String code, String message, WritableMap details) {
-        if (details == null) {
-            details = Arguments.createMap();
-        }
-
-        WritableMap errorMap = Arguments.createMap();
-
-        errorMap.putString("code",    code);
-        errorMap.putString("message", message);
-        errorMap.putMap("details",    details);
-
-        WritableMap resultMap = Arguments.createMap();
-        resultMap.putMap("error", errorMap);
-
-        callback.invoke(resultMap);
-    }
-
-    void _returnJSResult(Callback callback, Object result) {
-        WritableMap returnMap = ReactNativeUtils.writableMapFromObject("result", result);
-        callback.invoke(returnMap);
-    }
 }

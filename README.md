@@ -1,4 +1,5 @@
 # react-native-zeromq
+
 ZeroMQ client for React Native
 
 ## Installation
@@ -8,19 +9,24 @@ ZeroMQ client for React Native
 If you have rnpm installed, all you need to do is
 
 ```
-npm install zdmitry/react-native-zeromq --save
-rnpm link react-native-zeromq
+npm install @olehs/react-native-zeromq
 ```
 
+or
+
+```
+yarn add @olehs/react-native-zeromq
+```
 
 ### Manual
 
 #### Android (with RN 0.29 and above)
+
 in `settings.gradle`
 
 ```
 include ':react-native-zeromq'
-project(':react-native-zeromq').projectDir = file('../node_modules/react-native-zeromq/android')
+project(':react-native-zeromq').projectDir = file('../node_modules/@olehs/react-native-zeromq/android')
 ```
 
 in `android/app/build.gradle`
@@ -50,7 +56,6 @@ protected List<ReactPackage> getPackages() {
 
 Additionally multi dex support could be required.
 
-
 ## API
 
 `ZeroMQ.socket(ZeroMQ.SOCKET_TYPE socketType)` (Promise) - creates new ZeroMQ socket of corresponding type
@@ -58,17 +63,16 @@ Additionally multi dex support could be required.
 `ZeroMQ.getDeviceIdentifier()` (Promise) - returns user-friendly device identifier
 
 `socket.bind(String address)` (Promise) - set socket to listen state (acts as a server)
- 
-`socket.connect(String address)` (Promise) - connect socket to remote server (acts as a client) 
+
+`socket.connect(String address)` (Promise) - connect socket to remote server (acts as a client)
 
 `socket.setIdentity(String identity)` (Promise) - set client identity for ZeroMQ protocol
 
 `socket.send(String body, int flags)` (Promise) - send message. To send multipart message, use `ZMQ_SNDMORE` flag
 
-`socket.recv(int flags)` (Promise) - read incoming message, if available. Use `ZMQ_DONTWAIT` flag to read immediately 
+`socket.recv(int flags)` (Promise) - read incoming message, if available. Use `ZMQ_DONTWAIT` flag to read immediately
 
 `socket.close(String address)` (Promise) - close connection (and destroy object). Alias: `.destroy()`
-
 
 ## Usage
 
@@ -78,7 +82,7 @@ Prevent methods from being called multiple times (on Android).
 ### Example
 
 ```javascript
-import { ZeroMQ } from 'react-native-zeromq';
+import { ZeroMQ } from "@olehs/react-native-zeromq";
 
 ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.DEALER).then((socket) => {
   socket.connect("tcp://127.0.0.1:5566").then(() => {
@@ -89,5 +93,4 @@ ZeroMQ.socket(ZeroMQ.SOCKET.TYPE.DEALER).then((socket) => {
     });
   });
 });
-
 ```
